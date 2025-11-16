@@ -1,5 +1,7 @@
 # Escopo e Kanban – Projeto Agenda v3 (Fase: Backend/Domínio) 🏗️
 
+NOTA: adicionar ao escopo.md a seção completa “Armazenamento e Escalabilidade (SQLite vs Postgres)”
+
 **Arquitetura de Aplicação**
 
 - Modelo de Desenvolvimento: **Kanban** (WIP = 1)
@@ -94,13 +96,58 @@ A sequência de tarefas garante que a Segurança, Monetização e Domínio Crít
 
 1. [SETUP: DB/MODELO] Configurar TS, SQLite e Shared Entities c/ `prestadorId`
 
-   - WIP = 1
-   - Criação das interfaces e esquema inicial do BD.
+   - STATUS: Concluído ✅ (16/11/2025)
+   - Observações: Criação das interfaces e esquema inicial do BD; inicialização automática do arquivo de dados `./data/agenda.sqlite` durante startup.
+   - Artefatos criados/atualizados:
+     - `src/backend/database/index.ts` (inicialização do DB e DDL das tabelas)
+     - `src/shared/entities.ts` (tipagens compartilhadas)
+     - `package.json` / `package-lock.json` (dependências instaladas)
+     - `tsconfig.json` (config TypeScript)
+     - `.gitignore`
+   - Notas técnicas: `getDbInstance()` exporta a instância do better-sqlite3; índices essenciais criados (`idx_agendamentos_prestador_data`, etc.).
    - `prestadorId` deve ser a chave de ligação em todas as tabelas (Cliente, Serviço, Agendamento, Licença).
 
-2. [CORE: AUTH] Implementar Entidade Prestador e Login Básico
+2. [CORE: AUTH] Implementar Entidade Prestador, Signup e Login (JWT)
 
-   - Criação da tabela `Prestadores`, Repositório e Use Case de Login/Sessão (identifica o usuário).
+   - Escopo: criação e login de `Prestador` com geração de JWT para sessão (token contém `id`, `prestadorId` e `email`).
+   - STATUS: Implementado ✅ (signup + signin + util JWT)
+
+   - Artefatos criados/atualizados:
+
+     - `src/backend/persistence/PrestadorRepository.ts` (findById, findByEmail, create)
+     - `src/backend/domain/use-cases/CreatePrestador.ts` (signup — validação zod, bcrypt, uuid)
+     - `src/backend/domain/use-cases/SignInPrestador.ts` (signin — validação zod, bcrypt compare)
+     - `src/backend/utils/jwt.ts` (geração/validação de JWT — payload mínimo)
+     - `src/backend/api/auth.routes.ts` (endpoints `/api/v1/auth/signup` e `/api/v1/auth/login`)
+     - `.env.example` (adicionado `JWT_SECRET`)
+     - `package.json` (adicionado `jsonwebtoken` e tipos)
+
+   - Como testar localmente:
+
+     1. Instale dependências (nova lib `jsonwebtoken`):
+
+        npm install
+
+     2. Inicie o servidor em modo dev:
+
+        npm run dev
+
+     3. Testar signup (PowerShell):
+
+        Invoke-RestMethod -Uri 'http://localhost:4000/api/v1/auth/signup' -Method Post -Body '{"nome":"Tester","email":"test123@example.com","senha":"secret123"}' -ContentType 'application/json' | ConvertTo-Json -Depth 5
+
+        Resultado esperado: HTTP 201 com JSON { message: 'Conta criada com sucesso!', prestador: { id, prestadorId, nome, email }, token }
+
+     4. Testar login (PowerShell):
+
+        Invoke-RestMethod -Uri 'http://localhost:4000/api/v1/auth/login' -Method Post -Body '{"email":"test123@example.com","senha":"secret123"}' -ContentType 'application/json' | ConvertTo-Json -Depth 5
+
+        Resultado esperado: HTTP 200 com JSON { message: 'Login bem-sucedido!', prestadorId, token }
+
+   - Notas e recomendações de segurança:
+     - O `.env.example` foi atualizado com `JWT_SECRET`; em produção use uma string longa e segura.
+     - O token emitido tem validade configurada (7 dias no util atual) — considerar refresh tokens para mobile.
+     - O payload do token é mínimo (não inclui `senhaHash`).
 
 3. [CORE: LICENÇA] Implementar Use Case de Verificação de Licença (CRÍTICO)
 
