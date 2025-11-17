@@ -6,6 +6,7 @@ import cors from "cors";
 import { initializeDatabase } from "./database";
 import { json } from "body-parser";
 import authRoutes from "./api/auth.routes";
+import clienteRoutes from "./api/cliente.routes";
 
 const PORT = process.env.PORT || 4000;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
@@ -37,6 +38,7 @@ app.get("/", (req, res) =>
 // Rotas de exemplo (implementação futura)
 // Rotas de API
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/clientes", clienteRoutes);
 // app.use('/api/v1/appointments', appointmentRoutes);
 
 app.use(

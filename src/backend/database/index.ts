@@ -2,8 +2,8 @@ import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
 
-// Pega o caminho do banco de dados da variável de ambiente (DB_PATH=./data/agenda.sqlite)
-const DB_PATH = process.env.DB_PATH || "./data/agenda.sqlite";
+// Pega o caminho do banco de dados da variável de ambiente (DB_PATH=/data/agenda.sqlite no Fly)
+const DB_PATH = process.env.DB_PATH || "/data/agenda.sqlite";
 
 // Cria o caminho absoluto para garantir a consistência
 const dbPathAbsolute = path.resolve(DB_PATH);
@@ -63,6 +63,11 @@ export function initializeDatabase() {
         );
         CREATE INDEX IF NOT EXISTS idx_clientes_prestadorId ON clientes (prestadorId);
     `);
+
+  // Índice para busca case-insensitive em nome (melhora performance de autocomplete)
+  db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_clientes_nome_lower ON clientes (LOWER(nome));`
+  );
 
   // --- 4. Tabela SERVIÇOS ---
   db.exec(`

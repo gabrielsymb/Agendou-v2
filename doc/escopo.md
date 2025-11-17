@@ -67,25 +67,41 @@ Lista recomendada organizada por camada e finalidade, alinhada ao stack TypeScri
 
 ```
 c:\Agendou
-|-- README.md
-|-- doc
+|-- .dockerignore
+|-- .env
+|-- .env.example
+|-- .git/
+|-- .gitignore
+|-- data/
+|-- doc/
+|   |-- dependences-install.md
 |   |-- escopo.md
-|
-|-- src
-|   |-- shared
-|   |   |-- entities.ts
-|   |-- backend
-|   |   |-- server.ts
-|   |   |-- api
+|-- Dockerfile
+|-- fly.toml
+|-- fly.toml.bak
+|-- node_modules/
+|-- package-lock.json
+|-- package.json
+|-- README.md
+|-- src/
+|   |-- backend/
+|   |   |-- api/
+|   |   |   |-- .gitkeep
 |   |   |   |-- appointment.routes.ts
+|   |   |   |-- auth.routes.ts
+|   |   |-- database/
+|   |   |-- domain/
+|   |   |   |-- use-cases/
+|   |   |-- persistence/
 |   |   |   |-- .gitkeep
-|   |   |-- domain
-|   |   |   |-- use-cases
-|   |   |   |   |-- README.md
-|   |   |   |   |-- .gitkeep
-|   |   |-- persistence
 |   |   |   |-- AppointmentRepository.ts
-|   |   |   |-- .gitkeep
+|   |   |   |-- PrestadorRepository.ts
+|   |   |-- server.ts
+|   |   |-- utils/
+|   |-- shared/
+|   |   |-- .gitkeep
+|   |   |-- entities.ts
+|-- tsconfig.json
 ```
 
 Observação: esta árvore reflete os arquivos e pastas presentes no workspace no momento. Alguns arquivos são placeholders criados para estruturar o projeto.
@@ -145,9 +161,42 @@ A sequência de tarefas garante que a Segurança, Monetização e Domínio Crít
         Resultado esperado: HTTP 200 com JSON { message: 'Login bem-sucedido!', prestadorId, token }
 
    - Notas e recomendações de segurança:
+
      - O `.env.example` foi atualizado com `JWT_SECRET`; em produção use uma string longa e segura.
      - O token emitido tem validade configurada (7 dias no util atual) — considerar refresh tokens para mobile.
      - O payload do token é mínimo (não inclui `senhaHash`).
+
+     ### Implementação local e verificação do JWT
+
+     - Estado atual: durante testes locais criamos o arquivo `.env` com a variável `JWT_SECRET` (não comitar). O servidor emite tokens JWT no signup e no login. Em sessões de teste foi validado que os tokens gerados são decodificáveis e verificáveis com a chave local.
+
+     - Comandos úteis (PowerShell) para desenvolvimento:
+
+       1. Fazer login e armazenar token em `$token`:
+
+          $response = Invoke-RestMethod -Uri 'http://localhost:4000/api/v1/auth/login' -Method Post -Body '{"email":"seu@exemplo.com","senha":"senha"}' -ContentType 'application/json'
+          $token = $response.token
+
+       2. Decodificar payload (sem verificar assinatura):
+
+          node -e "console.log(JSON.stringify(require('jsonwebtoken').decode(process.argv[1]), null, 2))" $token
+
+       3. Verificar assinatura com o segredo local (token primeiro, segredo depois):
+
+          $secret = 'VALOR_DE_JWT_SECRET_LOCAL' # pegue do seu .env
+          node -e "console.log(require('jsonwebtoken').verify(process.argv[1], process.argv[2]))" $token $secret
+
+       4. Chamar rota protegida enviando o header Authorization:
+
+          Invoke-RestMethod -Uri 'http://localhost:4000/api/v1/protegida' -Headers @{ Authorization = "Bearer $token" } -Method Get
+
+     - Observações práticas:
+
+       - Atenção às aspas no PowerShell ao usar `node -e` (token deve ser o primeiro argumento e o segredo o segundo).
+       - Não partilhe `JWT_SECRET` publicamente; mantenha-o somente no `.env` local.
+
+     - Próximo passo recomendado (não implementado automaticamente no código atual):
+       - Criar um middleware `auth` (ex.: `src/backend/middlewares/auth.ts`) que use `verifyToken` de `src/backend/utils/jwt.ts` para validar o header `Authorization: Bearer <token>` e injetar `req.prestadorId` nas requisições protegidas. Isso simplifica proteção de rotas e mantém a segregação por `prestadorId`.
 
 3. [CORE: LICENÇA] Implementar Use Case de Verificação de Licença (CRÍTICO)
 
@@ -156,7 +205,47 @@ A sequência de tarefas garante que a Segurança, Monetização e Domínio Crít
 
 4. [SETUP: FLY.IO] Configurar Deploy e Volume Persistente
 
-   - Configurar `fly.toml` e Fly Volume para garantir a persistência do banco SQLite no servidor.
+   - STATUS: Implementado ✅ (16/11/2025)
+
+   - Resumo: configurado o deploy remoto no Fly.io com volume persistente para o arquivo SQLite. Foram criados os artefatos necessários para a build e deploy (Dockerfile multi-stage, `.dockerignore`, `fly.toml`) e um volume Fly foi provisionado para persistência dos dados.
+
+   - Artefatos criados/atualizados:
+
+     - `Dockerfile` — build multi-stage otimizado para produção (instala dependências em builder, copia apenas `dist` para runner).
+     - `.dockerignore` — exclui `node_modules`, `dist`, `data`, `.env` e outros arquivos sensíveis.
+     - `fly.toml` — configuração do app Fly com mount apontando o volume `agenda_db_volume` para `/app/data` (caminho onde o app grava `agenda.sqlite`).
+     - Comando usado para criar volume (exemplo): `fly volumes create agenda_db_volume --region gru --size 1GB --app agendou-v3-api` (foi criado um volume de 1GB para testes).
+     - Segredos: `JWT_SECRET` e `FRONTEND_ORIGIN` foram adicionados via `flyctl secrets set` e estão staged para o primeiro deploy.
+
+   - Como testar / comandos úteis:
+
+     1. Deploy remoto (faz o build no Fly e cria máquinas):
+
+        flyctl deploy -a agendou-v3-api --remote-only
+
+     2. Verificar status das máquinas:
+
+        flyctl machines list -a agendou-v3-api
+
+     3. Verificar logs do app (útil para ver criação das tabelas e mensagens do servidor):
+
+        flyctl logs -a agendou-v3-api
+
+     4. Notas sobre secrets/volume:
+
+        - `JWT_SECRET` foi gerado localmente e enviado como secret do Fly (não comitar a chave).
+        - `FRONTEND_ORIGIN` também foi setado: `flyctl secrets set FRONTEND_ORIGIN="http://localhost:3000" --app agendou-v3-api`.
+        - O volume montado em `/app/data` garante que o arquivo `agenda.sqlite` persista entre reinícios da máquina Fly.
+
+   - Observações e limitações:
+
+     - SQLite é uma solução adequada para MVP, porém volumes do Fly são atrelados a uma região/host — para escalabilidade horizontal ou alta disponibilidade considere migrar para Postgres gerenciado.
+     - O deploy remoto pode falhar na primeira tentativa se não houver máquinas criadas; executar o comando de deploy cria as máquinas automaticamente.
+     - Em ambiente de produção, prefira usar uma string forte para `JWT_SECRET` e gerenciar secrets fora do repositório.
+
+   - Próximo passo recomendado após deploy:
+
+     - Rodar `flyctl status -a agendou-v3-api` e `flyctl logs -a agendou-v3-api` para confirmar que o servidor inicializou corretamente e que as tabelas do SQLite foram criadas no volume.
 
 5. [BACKEND: CRUD] Implementar CRUD Completo de CLIENTE
 
