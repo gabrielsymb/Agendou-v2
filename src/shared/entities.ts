@@ -32,6 +32,7 @@ export interface IServico extends IBaseEntity {
   nome: string;
   duracaoMinutos: number;
   preco: number;
+  posicao: number; // posição para ordenação (Drag-and-Drop)
 }
 
 export interface IAgendamento extends IBaseEntity {

@@ -43,5 +43,40 @@ export class PrestadorRepository {
     );
   }
 
+  /**
+   * Cria um prestador e uma licença inicial dentro de uma transação.
+   */
+  public createWithLicenca(prestador: IPrestador, licenca: any): void {
+    const createPrestadorStmt = this.db.prepare(`
+            INSERT INTO prestadores (id, nome, email, senhaHash)
+            VALUES (?, ?, ?, ?)
+        `);
+
+    const createLicencaStmt = this.db.prepare(`
+            INSERT INTO licenca (id, prestadorId, tipoLicenca, chaveAleatoria, dataInicio, dataFim, ativa)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `);
+
+    const runTransaction = this.db.transaction(() => {
+      createPrestadorStmt.run(
+        prestador.id,
+        prestador.nome,
+        prestador.email,
+        prestador.senhaHash
+      );
+      createLicencaStmt.run(
+        licenca.id,
+        licenca.prestadorId,
+        licenca.tipoLicenca,
+        licenca.chaveAleatoria,
+        licenca.dataInicio,
+        licenca.dataFim,
+        licenca.ativa
+      );
+    });
+
+    runTransaction();
+  }
+
   // Futuros métodos: update, delete, listByPrestadorId etc.
 }

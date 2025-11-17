@@ -252,20 +252,83 @@ A sequência de tarefas garante que a Segurança, Monetização e Domínio Crít
    - CRUD (GET, POST, PUT, DELETE) para a entidade `Cliente`.
    - Validação: telefone numérico.
    - Filtro obrigatório por `prestadorId`.
+   - STATUS: Implementado ✅
+   - Observações: Implementado endpoints de criação, busca/autocomplete, atualização e exclusão protegidos por `prestadorId`.
+   - Artefatos criados/atualizados:
+
+     - `src/backend/persistence/ClienteRepository.ts` (métodos: create, findById, findAllByPrestadorId, update, delete, searchByQuery)
+     - `src/backend/domain/use-cases/CreateCliente.ts`, `UpdateCliente.ts`, `DeleteCliente.ts`, `SearchClientes.ts`
+     - `src/backend/api/cliente.routes.ts` (rotas POST /api/v1/clientes, PUT /api/v1/clientes/:id, DELETE /api/v1/clientes/:id, GET /api/v1/clientes/search)
+     - `src/backend/utils/phone.ts` (normalização de telefones para formato DDI+11)
+     - Testes unitários em `src/backend/__tests__` para Create/Update/Delete (Jest + ts-jest) — todos passando localmente (3/3).
+
+   - Notas de implementação:
+     - Autenticação por `Prestador` e middleware `auth` foram integrados às rotas para garantir segregação por `prestadorId`.
+     - O repositório normaliza telefones antes de persistir e `UpdateCliente` recarrega o registro persistido para refletir normalizações.
+     - Adicionado índice `idx_clientes_nome_lower` para otimizar buscas case-insensitive (autocomplete).
 
 6. [BACKEND: CRUD] Implementar CRUD de SERVIÇO
 
    - CRUD para `Serviço` (Nome, Duração, Preço).
    - Vinculado ao `prestadorId`.
+   - STATUS: Parcialmente Implementado (Repositório + Use Cases de Create/List prontos)
+
+   - Artefatos já criados/atualizados:
+
+     - `src/backend/persistence/ServicoRepository.ts` (create, findById, findAllByPrestadorId, update, delete, getNextPosicao)
+     - `src/backend/domain/use-cases/CreateServico.ts` (validação com zod, gera id e calcula `posicao` antes de persistir)
+     - `src/backend/domain/use-cases/ListServicos.ts` (lista por `prestadorId` ordenado por `posicao`)
+
+   - Pendências / Próximos passos:
+
+     1. Criar as rotas protegidas de serviço (`src/backend/api/servico.routes.ts`) e montar em `server.ts` sob o router protegido (AuthMiddleware).
+     2. Implementar Use Cases e rotas de Update e Delete (seguindo padrão de `prestadorId` e verificação de licença onde aplicável).
+     3. Adicionar testes unitários e de integração para o fluxo completo do CRUD de serviço (happy-path + erros de validação e proteção por prestador).
+
+   - Observações:
+
+     - A coluna `posicao` já foi adicionada ao DDL do banco e o repositório calcula a próxima posição (`MAX(posicao)+1`) ao criar novos serviços — isso prepara o terreno para o futuro Use Case de reordenação (Drag-and-Drop).
+     - Marcaremos a tarefa como concluída quando as rotas protegidas e os testes forem implementados e validados em CI.
 
 7. [BACKEND: DOMÍNIO CRÍTICO] Implementar Use Case de Criação de Agendamento
 
    - Lógica: horários dentro do atendimento, granularidade de 10 minutos, nenhum overlap permitido.
-   - Status inicial: `Agendado`.
+   - STATUS: Concluído ✅ (Create / Read (List Dia) / Update / Delete / Status implementados)
+
+   - Artefatos criados/atualizados:
+
+     - `src/backend/persistence/AgendamentoRepository.ts` (findConflictingAppointments, create, findBetween, findByDay, findById, update, delete, reindexPosicaoAfterDelete)
+     - `src/backend/domain/use-cases/CreateAgendamento.ts` (validação zod, cálculo dataHoraFim, verificação de conflito)
+     - `src/backend/domain/use-cases/ListAgendamentosDia.ts` (validação YYYY-MM-DD, intervalo UTC, ordenação e retorno enriquecido com clienteNome/servicoNome)
+     - `src/backend/domain/use-cases/UpdateAgendamento.ts` (reagendamento com verificação de conflito)
+     - `src/backend/domain/use-cases/UpdateAgendamentoStatus.ts` (alteração rápida de status: Concluido / Cancelado)
+     - `src/backend/domain/use-cases/DeleteAgendamento.ts` (remoção segura e reindexação de posições)
+     - `src/backend/api/agendamento.routes.ts` (rotas protegidas: POST /, GET /dia/:data, PUT /:id, PUT /:id/status, DELETE /:id)
+
+   - Testes e validação recomendados: criar unit tests para conflito, criação/reagendamento e reindexação; integrar rota GET /dia/:data com supertest.
 
 8. [BACKEND: D&D] Implementar Rotas e Use Case de REORDENAÇÃO (POSITION)
 
-   - Endpoint que recebe 2 IDs e troca seus horários (swap), aplicando revalidação de conflito do domínio.
+   - STATUS: Concluído ✅
+
+   - Resumo: Implementado o Use Case e a rota de reordenação que permite ao frontend (drag-and-drop) persistir a nova ordem dos agendamentos para um dia.
+
+   - Artefatos criados/atualizados:
+
+     - `src/backend/domain/use-cases/ReorderAgendamentos.ts` (Use Case que valida input e reescreve `posicao` em transação)
+     - `src/backend/persistence/AgendamentoRepository.ts` (adicionados métodos `startTransaction`, `commitTransaction`, `rollbackTransaction`, `updatePosicao`)
+     - `src/backend/api/agendamento.routes.ts` (rota PUT `/api/v1/agendamentos/reorder` protegida que invoca o Use Case)
+
+   - Ajustes realizados após revisão:
+
+     - Validação adicional no Use Case: agora garantimos que todos os IDs informados existam e pertençam ao mesmo dia (formato YYYY-MM-DD) antes de iniciar a transação. Se houver IDs faltantes ou que não pertençam ao dia requisitado, a operação é abortada com erro descritivo.
+     - Reordenação é executada dentro de uma transação do banco; em caso de erro a transação é revertida.
+     - Testes unitários adicionados em `src/backend/__tests__/ReorderAgendamentos.test.ts` cobrindo happy-path, IDs faltantes e mismatch de dia.
+
+   - Notas operacionais:
+
+     - A implementação assume que o middleware de autenticação injeta `req.prestadorId` e que o backend valida `prestadorId` em `AgendamentoRepository`.
+     - Possível otimização futura: trocar múltiplos SELECT por um `SELECT ... WHERE id IN (...)` para validar todos os agendamentos em uma única consulta (melhora performance para listas grandes).
 
 9. [BACKEND: CANCELAMENTO] Implementar Use Case de Cancelamento/Conclusão
    - Alterar status para `Cancelado` ou `Concluído` e registrar no histórico do cliente.

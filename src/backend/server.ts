@@ -7,6 +7,8 @@ import { initializeDatabase } from "./database";
 import { json } from "body-parser";
 import authRoutes from "./api/auth.routes";
 import clienteRoutes from "./api/cliente.routes";
+import servicoRoutes from "./api/servico.routes";
+import agendamentoRoutes from "./api/agendamento.routes";
 
 const PORT = process.env.PORT || 4000;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
@@ -39,6 +41,8 @@ app.get("/", (req, res) =>
 // Rotas de API
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/clientes", clienteRoutes);
+app.use("/api/v1/servicos", servicoRoutes);
+app.use("/api/v1/agendamentos", agendamentoRoutes);
 // app.use('/api/v1/appointments', appointmentRoutes);
 
 app.use(

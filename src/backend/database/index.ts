@@ -77,9 +77,11 @@ export function initializeDatabase() {
             nome TEXT NOT NULL,
             duracaoMinutos INTEGER NOT NULL,
             preco REAL NOT NULL,
+      posicao INTEGER NOT NULL,
             FOREIGN KEY(prestadorId) REFERENCES prestadores(id)
         );
-        CREATE INDEX IF NOT EXISTS idx_servicos_prestadorId ON servicos (prestadorId);
+    CREATE INDEX IF NOT EXISTS idx_servicos_prestadorId ON servicos (prestadorId);
+    CREATE INDEX IF NOT EXISTS idx_servicos_prestador_posicao ON servicos (prestadorId, posicao);
     `);
 
   // --- 5. Tabela AGENDAMENTOS (Domínio Crítico) ---
