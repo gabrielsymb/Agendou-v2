@@ -64,7 +64,7 @@ authRoutes.post("/login", async (req, res) => {
 
     return res.status(200).json({
       message: "Login bem-sucedido!",
-      prestadorId: prestador.prestadorId,
+      prestador,
       token,
     });
   } catch (error) {
@@ -98,14 +98,12 @@ authRoutes.post("/register", async (req, res) => {
       email: prestador.email,
     });
 
-    return res
-      .status(201)
-      .json({
-        message:
-          "Conta criada com sucesso! Você recebeu uma licença de teste de 7 dias.",
-        prestador,
-        token,
-      });
+    return res.status(201).json({
+      message:
+        "Conta criada com sucesso! Você recebeu uma licença de teste de 7 dias.",
+      prestador,
+      token,
+    });
   } catch (error) {
     if (error instanceof ZodError) {
       return res

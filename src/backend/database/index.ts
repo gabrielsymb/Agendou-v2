@@ -81,8 +81,28 @@ export function initializeDatabase() {
             FOREIGN KEY(prestadorId) REFERENCES prestadores(id)
         );
     CREATE INDEX IF NOT EXISTS idx_servicos_prestadorId ON servicos (prestadorId);
-    CREATE INDEX IF NOT EXISTS idx_servicos_prestador_posicao ON servicos (prestadorId, posicao);
     `);
+
+  // Se a tabela 'servicos' já existia sem a coluna 'posicao', adicionar coluna com um valor default
+  try {
+    const servicosInfo = db
+      .prepare("PRAGMA table_info(servicos);")
+      .all() as Array<{ name: string }>;
+    const hasPosicao = servicosInfo.some((c) => c.name === "posicao");
+    if (!hasPosicao) {
+      // adicionar coluna de forma segura
+      db.exec(
+        "ALTER TABLE servicos ADD COLUMN posicao INTEGER NOT NULL DEFAULT 0;"
+      );
+    }
+  } catch (err) {
+    // Se PRAGMA falhar porque a tabela não existe, ignore — tabela acaba de ser criada acima
+  }
+
+  // Agora crie o índice que depende da coluna 'posicao'
+  db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_servicos_prestador_posicao ON servicos (prestadorId, posicao);`
+  );
 
   // --- 5. Tabela AGENDAMENTOS (Domínio Crítico) ---
   db.exec(`
@@ -100,8 +120,26 @@ export function initializeDatabase() {
             FOREIGN KEY(servicoId) REFERENCES servicos(id)
         );
         -- Índice CRÍTICO para a tela de agenda
-        CREATE INDEX IF NOT EXISTS idx_agendamentos_prestador_data ON agendamentos (prestadorId, dataHoraInicio);
     `);
+
+  // Garantir que a coluna 'posicao' exista em agendamentos (migração segura)
+  try {
+    const agendInfo = db
+      .prepare("PRAGMA table_info(agendamentos);")
+      .all() as Array<{ name: string }>;
+    const hasPosAg = agendInfo.some((c) => c.name === "posicao");
+    if (!hasPosAg) {
+      db.exec(
+        "ALTER TABLE agendamentos ADD COLUMN posicao REAL NOT NULL DEFAULT 0;"
+      );
+    }
+  } catch (err) {
+    // ignore
+  }
+
+  db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_agendamentos_prestador_data ON agendamentos (prestadorId, dataHoraInicio);`
+  );
 
   console.log("Tabelas verificadas e/ou criadas com sucesso!");
 }

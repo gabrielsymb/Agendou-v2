@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { IPrestador, ILicenca } from "../../../shared/entities";
 import { PrestadorRepository } from "../../persistence/PrestadorRepository";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -34,7 +34,7 @@ export class RegisterPrestador {
 
     const senhaHash = bcrypt.hashSync(validatedData.senha, SALT_ROUNDS);
 
-    const prestadorId = uuidv4();
+  const prestadorId = randomUUID();
     const dataInicio = dayjs.utc().toISOString();
     const dataFim = dayjs.utc().add(7, "day").toISOString();
 
@@ -47,10 +47,10 @@ export class RegisterPrestador {
     };
 
     const novaLicenca: ILicenca = {
-      id: uuidv4(),
+      id: randomUUID(),
       prestadorId: prestadorId,
       tipoLicenca: "semanal",
-      chaveAleatoria: uuidv4(),
+      chaveAleatoria: randomUUID(),
       dataInicio: dataInicio,
       dataFim: dataFim,
       ativa: true,

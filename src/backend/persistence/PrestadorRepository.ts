@@ -64,14 +64,25 @@ export class PrestadorRepository {
         prestador.email,
         prestador.senhaHash
       );
+      // Ensure values are primitive types supported by better-sqlite3
+      const dataInicio =
+        licenca.dataInicio instanceof Date
+          ? licenca.dataInicio.toISOString()
+          : String(licenca.dataInicio);
+      const dataFim =
+        licenca.dataFim instanceof Date
+          ? licenca.dataFim.toISOString()
+          : String(licenca.dataFim);
+      const ativa = licenca.ativa ? 1 : 0; // boolean -> integer (SQLite)
+
       createLicencaStmt.run(
-        licenca.id,
-        licenca.prestadorId,
-        licenca.tipoLicenca,
-        licenca.chaveAleatoria,
-        licenca.dataInicio,
-        licenca.dataFim,
-        licenca.ativa
+        String(licenca.id),
+        String(licenca.prestadorId),
+        String(licenca.tipoLicenca),
+        String(licenca.chaveAleatoria),
+        dataInicio,
+        dataFim,
+        ativa
       );
     });
 

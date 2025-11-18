@@ -5,13 +5,17 @@ import express from "express";
 import cors from "cors";
 import { initializeDatabase } from "./database";
 import { json } from "body-parser";
-import authRoutes from "./api/auth.routes";
-import clienteRoutes from "./api/cliente.routes";
-import servicoRoutes from "./api/servico.routes";
-import agendamentoRoutes from "./api/agendamento.routes";
+// Note: route modules import repositories that use the DB instance at module init.
+// We will require them after running initializeDatabase() to ensure migrations run first.
 
 const PORT = process.env.PORT || 4000;
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
+// Accept a comma-separated list via FRONTEND_ORIGINS or fallback to both common dev ports
+const FRONTEND_ORIGINS = (
+  process.env.FRONTEND_ORIGINS || "http://localhost:3000,http://localhost:5173"
+)
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 
 // Inicialização do banco de dados (migrations iniciais)
 try {
@@ -21,11 +25,24 @@ try {
   process.exit(1);
 }
 
+// importar rotas APÓS as migrations serem executadas
+const authRoutes = require("./api/auth.routes").default;
+const clienteRoutes = require("./api/cliente.routes").default;
+const servicoRoutes = require("./api/servico.routes").default;
+const agendamentoRoutes = require("./api/agendamento.routes").default;
+
 const app = express();
 
 app.use(
   cors({
-    origin: FRONTEND_ORIGIN,
+    origin: (origin, callback) => {
+      // Allow non-browser requests (like curl, server-to-server) with no origin
+      if (!origin) return callback(null, true);
+      if (FRONTEND_ORIGINS.includes(origin)) return callback(null, true);
+      // Otherwise block the request and provide a helpful message in the server logs
+      console.warn(`Blocked CORS request from origin: ${origin}`);
+      return callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })

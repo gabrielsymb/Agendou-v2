@@ -1,6 +1,21 @@
 // Shared entities and interfaces between backend and frontend
 // Tipagens compartilhadas para o projeto Agenda v3
 
+export interface IRegisterData {
+  nome: string;
+  email: string;
+  password: string;
+}
+
+export interface IPrestador {
+  id: string;
+  prestadorId: string;
+  nome: string;
+  email: string;
+}
+// Shared entities and interfaces between backend and frontend
+// Tipagens compartilhadas para o projeto Agenda v3
+
 // Define o tipo base que todas as entidades usam
 export interface IBaseEntity {
   id: string; // UUID ou ID único

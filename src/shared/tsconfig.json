@@ -3,7 +3,8 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
-    "declarationMap": false
+    "declarationMap": false,
+    "ignoreDeprecations": "6.0"
   },
   "include": ["./**/*"]
 }

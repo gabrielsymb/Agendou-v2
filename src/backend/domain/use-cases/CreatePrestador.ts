@@ -2,7 +2,7 @@ import { z } from "zod";
 import { IPrestador } from "../../../shared/entities";
 import { PrestadorRepository } from "../../../backend/persistence/PrestadorRepository";
 import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 
 export const CreatePrestadorSchema = z.object({
   nome: z.string().min(3, "O nome deve ter no mínimo 3 caracteres."),
@@ -34,7 +34,7 @@ export class CreatePrestador {
 
     const senhaHash = await bcrypt.hash(validatedData.senha, this.saltRounds);
 
-    const id = uuidv4();
+  const id = randomUUID();
     const novoPrestador: IPrestador = {
       id,
       prestadorId: id,

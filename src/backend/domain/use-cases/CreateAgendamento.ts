@@ -2,7 +2,7 @@ import { z } from "zod";
 import { IAgendamento } from "../../../shared/entities";
 import { AgendamentoRepository } from "../../persistence/AgendamentoRepository";
 import { ServicoRepository } from "../../persistence/ServicoRepository";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
@@ -59,7 +59,7 @@ export class CreateAgendamento {
     }
 
     const novo: IAgendamento = {
-      id: uuidv4(),
+      id: randomUUID(),
       prestadorId,
       clienteId,
       servicoId,
