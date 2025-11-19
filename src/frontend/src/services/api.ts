@@ -17,6 +17,6 @@ async function request(path: string, init: RequestInit = {}){
   return data;
 }
 
+// n precisa exportar como default, pode importar assim:
+// import { api } from './api'
 export const api = { get:(p:string)=>request(p,{method:'GET'}), post:(p:string,b?:any)=>request(p,{method:'POST', body: b? JSON.stringify(b): undefined}), put:(p:string,b?:any)=>request(p,{method:'PUT', body: b? JSON.stringify(b): undefined}), del:(p:string)=>request(p,{method:'DELETE'}) };
-
-export default api;
