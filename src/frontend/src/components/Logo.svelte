@@ -1,5 +1,6 @@
 <script lang="ts">
   export let size: number = 64;
+  export let animated: boolean = true;
   const accent = 'var(--accent, #34d399)';
   const stroke = 'var(--logo-stroke, rgba(255,255,255,0.95))';
 </script>
@@ -17,7 +18,7 @@
   <rect class="top-fill" x="6" y="8" width="52" height="12" rx="4" fill={accent} opacity="0.12" />
 
   <rect
-    class="cal-outline stroke-anim cal"
+    class="cal-outline {animated ? 'stroke-anim cal' : ''}"
     x="6"
     y="16"
     width="52"
@@ -35,7 +36,7 @@
   </g>
 
   <path
-    class="stroke-anim a"
+    class="{animated ? 'stroke-anim a' : ''}"
     d="M20 42 L32 20 L44 42 M25 32 L39 32"
     fill="none"
     stroke={accent}
@@ -103,4 +104,11 @@
   @media (prefers-reduced-motion: reduce) {
     .stroke-anim { animation: none; stroke-dashoffset: 0; }
   }
+
+
+
+  /*  OBS! Animado (padrão): <Logo />
+Estático: <Logo animated={false} />*/
+
+
 </style>
