@@ -1,26 +1,21 @@
 <script lang="ts">
-  import Logo from '../components/Logo.svelte';
   import ButtonPrimary from '../lib/components/shared/ButtonPrimary.svelte';
-  import Card from '../lib/components/shared/Card.svelte';
-
-  // navegação simples para sua SPA
-  function navigate(path: string) {
-    history.pushState({}, '', path);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  }
+  import { navigate } from '../lib/router';
+  import Logo from '../components/Logo.svelte';
 </script>
 
 <section class="welcome" role="main" aria-labelledby="welcome-title">
   <div class="panel">
-    <!-- usar componente Logo -->
-    <Logo />
+    <div class="logo-wrap" style="display:flex;justify-content:center;margin-bottom:14px;">
+      <Logo size={96} />
+    </div>
 
-    <h1 id="welcome-title" class="title">Agendou</h1>
-    <p class="subtitle">Agenda de profissionais — rápido, offline-ready e com aparência nativa.</p>
+    <h1 id="welcome-title" class="title">Agendou!</h1>
+    <p class="subtitle">Faça agendamentos de forma rápida e com poucos cliques!</p>
 
     <div class="actions">
       <ButtonPrimary on:click={() => navigate('/login')}>Entrar</ButtonPrimary>
-      <ButtonPrimary variant="register" on:click={() => navigate('/register')}>Criar conta</ButtonPrimary>
+      <ButtonPrimary variant="register" on:click={() => navigate('/register')}>Cadastrar</ButtonPrimary>
     </div>
   </div>
 </section>

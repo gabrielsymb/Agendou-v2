@@ -1,21 +1,60 @@
 <script lang="ts">
-  import Inner from '../../../components/Button.svelte';
+  import { createEventDispatcher } from 'svelte';
   export let variant: 'primary' | 'register' = 'primary';
+  export let disabled: boolean = false;
+  const dispatch = createEventDispatcher();
 
-  // cores conforme ManifestoUX: verde como accent; azul para registro
-  const greenBg = 'linear-gradient(90deg,#2dd4bf,#34d399)';
-  const blueBg = 'linear-gradient(90deg,#3b82f6,#2563eb)';
-
-  const bg = variant === 'register' ? blueBg : greenBg;
-  const textColor = variant === 'register' ? '#ffffff' : '#071013';
-
-  // usar any para forçar atributos extras (evita erro de tipagem do svelte-ts)
-  const forcedAttrs: any = {
-    class: `ag-btn ag-btn--${variant}`,
-    style: `background: ${bg}; color: ${textColor};`
-  };
+  function handleClick(e: any) {
+    if (disabled) return;
+    // re-dispara click como CustomEvent com o evento original no detail
+    const original = e && e.detail ? e.detail : e;
+    dispatch('click', { originalEvent: original });
+  }
 </script>
 
-<svelte:component this={Inner} {...$$restProps} {...forcedAttrs}>
+<button
+  class="btn {variant}"
+  on:click={handleClick}
+  aria-disabled={disabled}
+  disabled={disabled}
+  {...$$restProps}
+>
   <slot />
-</svelte:component>
+</button>
+
+<style>
+  /* cor primária alinhada ao Manifesto UX (accent) */
+  :root { --accent: #34d399; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 16px;
+    min-width: 120px;
+    min-height: 44px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: var(--accent);
+    color: #071013;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  /* variante de registro (outline) */
+  .btn.register {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid rgba(52,211,153,0.12);
+  }
+
+  .btn[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* feedback tátil */
+  .btn:active { transform: scale(0.98); transition: transform 120ms; }
+</style>

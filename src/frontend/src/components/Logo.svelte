@@ -4,7 +4,6 @@
   const accent = 'var(--accent, #34d399)';
   const stroke = 'var(--logo-stroke, rgba(255,255,255,0.95))';
 </script>
-
 <svg
   width={size}
   height={size}
