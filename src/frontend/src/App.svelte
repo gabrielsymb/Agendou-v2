@@ -59,7 +59,8 @@
   });
 </script>
 
-<ToastContainer />
 <main class="min-vh-100 bg-light">
   <svelte:component this={Component} />
 </main>
+
+<ToastContainer />

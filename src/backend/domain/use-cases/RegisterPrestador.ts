@@ -5,6 +5,7 @@ import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { AppError } from "../../errors/AppError"; 
 
 dayjs.extend(utc);
 
@@ -28,13 +29,17 @@ export class RegisterPrestador {
   public execute(data: IRegisterPrestadorDTO): Omit<IPrestador, "senhaHash"> {
     const validatedData = RegisterPrestadorSchema.parse(data);
 
-    if (this.repository.findByEmail(validatedData.email)) {
-      throw new Error("Este email já está cadastrado.");
+    const userAlreadyExists = this.repository.findByEmail(validatedData.email);
+    // if (this.repository.findByEmail(validatedData.email)) {
+    //   throw new Error("Este email já está cadastrado.");
+    // }
+    if (userAlreadyExists) {
+      throw new AppError("Este email já está cadastrado.", 409);
     }
 
     const senhaHash = bcrypt.hashSync(validatedData.senha, SALT_ROUNDS);
 
-  const prestadorId = randomUUID();
+    const prestadorId = randomUUID();
     const dataInicio = dayjs.utc().toISOString();
     const dataFim = dayjs.utc().add(7, "day").toISOString();
 

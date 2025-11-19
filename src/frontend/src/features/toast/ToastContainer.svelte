@@ -1,22 +1,58 @@
 <script lang="ts">
-  import toasts, { removeToast } from './store';
-  import { fly, fade } from 'svelte/transition';
-  import { onDestroy } from 'svelte';
-  let list = [] as any[];
-  const unsub = toasts.subscribe(v=> list = v);
-  onDestroy(()=> unsub());
+  import { toasts } from '../../stores/toast';
+  import Toast from './Toast.svelte';
+
+  function handleClose(e: CustomEvent) {
+    const id = e.detail?.id;
+    if (id) toasts.remove(id);
+    else if (e.detail) toasts.remove(e.detail);
+  }
 </script>
 
-<style>
-  .toast-root{ position:fixed; right:1rem; bottom:1rem; display:flex; flex-direction:column; gap:.5rem; z-index:9999 }
-  .toast-item{ background:var(--agendou-card); color:var(--text-on-dark); padding:.6rem .9rem; border-radius:8px; min-width:200px; box-shadow:0 6px 12px rgba(0,0,0,0.3) }
-</style>
-
-<div class="toast-root">
-  {#each list as t (t.id)}
-    <div class="toast-item" in:fade out:fade>
-      <div>{t.message}</div>
-  <button aria-label="Fechar notificação" title="Fechar" on:click={() => removeToast(t.id)}>✕</button>
-    </div>
+<div class="toast-container" aria-live="polite">
+  {#each $toasts as t (t.id)}
+    <button
+      class="wrap"
+      type="button"
+      aria-label="Fechar notificação"
+      on:click={() => toasts.remove(t.id)}
+    >
+      <Toast
+        id={t.id}
+        message={t.message}
+        type={t.type ?? 'success'}
+        duration={t.timeout ?? 4000}
+        on:close={handleClose}
+      />
+    </button>
   {/each}
 </div>
+
+<style>
+  .toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
+    display:flex;
+    flex-direction:column;
+    gap:0.6rem;
+    pointer-events: none;
+    max-width: calc(100vw - 2rem);
+  }
+  /* botão sem estilo, mas acessível */
+  .wrap {
+    pointer-events: auto;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+  }
+  .wrap:focus-visible { outline: 3px solid rgba(7,17,48,0.12); border-radius: 8px; }
+  @media (max-width: 520px) {
+    .toast-container { left: 1rem; right: 1rem; top: auto; bottom: 1rem; align-items: center; }
+    .wrap { width: 100%; display:flex; justify-content:center; }
+  }
+</style>

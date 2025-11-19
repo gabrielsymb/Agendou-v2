@@ -5,6 +5,7 @@ import express from "express";
 import cors from "cors";
 import { initializeDatabase } from "./database";
 import { json } from "body-parser";
+import { AppError } from "./errors/AppError"; // adicione o import perto dos outros
 // Note: route modules import repositories that use the DB instance at module init.
 // We will require them after running initializeDatabase() to ensure migrations run first.
 
@@ -69,7 +70,11 @@ app.use(
     res: express.Response,
     next: express.NextFunction
   ) => {
-    console.error(err.stack);
+    if (err instanceof AppError) {
+      return res.status(err.statusCode).json({ message: err.message });
+    }
+
+    console.error(err.stack || err);
     return res
       .status(500)
       .json({ message: "Ocorreu um erro interno no servidor." });

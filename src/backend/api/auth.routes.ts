@@ -89,9 +89,8 @@ authRoutes.post("/login", async (req, res) => {
 authRoutes.post("/register", async (req, res) => {
   try {
     const register = new RegisterPrestador();
-    const prestador = register.execute(req.body as IRegisterPrestadorDTO);
+    const prestador = await register.execute(req.body as IRegisterPrestadorDTO);
 
-    // Gera token após cadastro
     const token = generateToken({
       id: prestador.id,
       prestadorId: prestador.prestadorId,
@@ -104,19 +103,30 @@ authRoutes.post("/register", async (req, res) => {
       prestador,
       token,
     });
-  } catch (error) {
-    if (error instanceof ZodError) {
+  } catch (error: any) {
+    // ZodError (validação)
+    if (error && (error.name === "ZodError" || error.issues)) {
       return res
         .status(400)
-        .json({ message: "Dados de entrada inválidos.", errors: error.issues });
+        .json({ message: "Dados de entrada inválidos.", errors: error.issues || error });
     }
-    if (
-      error instanceof Error &&
-      error.message.includes("email já está cadastrado")
-    ) {
-      return res.status(409).json({ message: error.message });
+
+    // Mapear mensagens de "email duplicado" para 409 (Conflict)
+    if (error instanceof Error) {
+      const msg = error.message.toLowerCase();
+      const isDuplicateEmail =
+        (msg.includes("email") && (msg.includes("cadastrad") || msg.includes("já") || msg.includes("já existe"))) ||
+        msg.includes("já registrado") ||
+        msg.includes("email duplicado");
+
+      if (isDuplicateEmail) {
+        return res.status(409).json({ message: error.message });
+      }
     }
-    throw error;
+
+    // fallback: erro interno
+    console.error("Erro em POST /register:", error && (error.stack || error));
+    return res.status(500).json({ message: "Erro interno no servidor." });
   }
 });
 
