@@ -1,4 +1,6 @@
 <script lang="ts">
+  import './app.css';
+  import './styles/global.css';
   import { onMount } from 'svelte';
   import Welcome from './routes/Welcome.svelte';
   import Login from './routes/Login.svelte';

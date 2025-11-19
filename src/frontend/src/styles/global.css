@@ -1,0 +1,29 @@
+/* Global reset e fundo escuro consistente */
+:root {
+  --bg: #121212;
+  --panel: #1e1e1e;
+  --text: #ffffff;
+  --muted: #b3b3b3;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;                 /* remove a margem branca do navegador */
+  background: var(--bg);     /* fundo global escuro */
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* opcional: garantir que o root do app ocupe toda a altura */
+#svelte {
+  min-height: 100vh;
+  display: block;
+}
