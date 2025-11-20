@@ -60,10 +60,12 @@
       loading = false;
     }
   }
+  import Section from '../components/layout/Section.svelte';
 </script>
 
-<div class="container-auth">
-  <Card className="auth-panel">
+<Section padded>
+  <div class="container-auth">
+    <Card className="auth-panel">
     <h2 class="auth-title">Criar conta</h2>
     
     <form on:submit|preventDefault={handleSubmit} style="display:flex;flex-direction:column;gap:.75rem;">
@@ -71,7 +73,7 @@
       <Input id="email" type="email" bind:value={email}><span slot="label">E-mail</span></Input>
       <PasswordInput id="senha" bind:value={senha}><span slot="label">Senha</span></PasswordInput>
       
-      <Button type="submit" ariaLabel="Criar conta" disabled={loading}>
+      <Button type="submit" ariaLabel="Criar conta" loading={loading} disabled={loading}>
         {loading ? 'Criando...' : 'Criar conta'}
       </Button>
 
@@ -83,8 +85,9 @@
        Já tem conta? 
        <a href="/login" on:click|preventDefault={() => navigate('/login')} style="color: var(--primary-color, #4facfe);">Entrar</a>
     </div>
-  </Card>
-</div>
+    </Card>
+  </div>
+</Section>
 
 <style>
   /* --- Estilos do Container (Layout e Centralização) --- */
@@ -93,7 +96,7 @@
     display: flex;
     align-items: center; /* Centraliza verticalmente */
     justify-content: center; /* Centraliza horizontalmente */
-    padding: 24px;
+  padding: 24px 0; /* remove lateral padding on mobile */
     background: #121212;
     box-sizing: border-box;
     overflow-x: hidden; /* Correção para telas pequenas */
@@ -106,6 +109,7 @@
     max-width: 500px !important; 
     min-width: 300px !important; /* Mínimo ajustado para mobile */
     margin: 0 auto; /* Centralização reforçada */
+  box-sizing: border-box;
     padding: 28px;
     text-align: center;
     transition: height 0.3s ease-in-out, max-height 0.3s ease-in-out, box-shadow 0.3s ease-in-out;

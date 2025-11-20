@@ -5,6 +5,8 @@
   import Button from '../components/Button.svelte';
   import { navigate } from '../lib/router';
   import { toasts } from '../stores/toast';
+  import { auth } from '../lib/stores/auth';
+  import Section from '../components/layout/Section.svelte';
 
   let email = '';
   let senha = '';
@@ -30,27 +32,10 @@
 
     loading = true;
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, senha })
-      });
-
-      const data = await res.json().catch(() => null);
-
-      if (!res.ok) {
-        const msg = data?.message ?? `Erro: ${res.status} ${res.statusText}`;
-        toasts.add(msg, 'error');
-        errorMsg = msg;
-        return;
-      }
-
-      const success = data?.message ?? 'Login bem‑sucedido!';
-      toasts.add(success, 'success');
-      if (data?.token) localStorage.setItem('token', data.token);
-      successMsg = success;
-      // Navegando para /home após o login
-      setTimeout(() => navigate('/home'), 500);
+      await auth.login(email, senha);
+      // auth.setSession already emits a toast (showToast). Avoid double toast here.
+      successMsg = 'Login efetuado';
+      setTimeout(() => navigate('/home'), 300);
     } catch (err: any) {
       const msg = err?.message ?? 'Erro ao conectar com o servidor.';
       toasts.add(msg, 'error');
@@ -61,8 +46,9 @@
   }
 </script>
 
-<div class="container-auth">
-  <Card className="auth-panel">
+<Section padded>
+  <div class="container-auth">
+    <Card className="auth-panel">
     <h2 class="auth-title">Entrar</h2>
     
     <form on:submit|preventDefault={handleSubmit} style="display:flex;flex-direction:column;gap:.75rem;">
@@ -70,7 +56,7 @@
       <PasswordInput id="senha" bind:value={senha}><span slot="label">Senha</span></PasswordInput>
 
       <div style="margin-top:12px">
-        <Button type="submit" disabled={loading}>{loading ? 'Entrando...' : 'Entrar'}</Button>
+        <Button type="submit" loading={loading} disabled={loading}>{loading ? 'Entrando...' : 'Entrar'}</Button>
       </div>
 
       {#if errorMsg}
@@ -85,8 +71,9 @@
        Não tem conta? 
        <a href="/register" on:click|preventDefault={() => navigate('/register')} style="color: var(--primary-color, #4facfe);">Cadastre-se</a>
     </div>
-  </Card>
-</div>
+    </Card>
+  </div>
+</Section>
 
 <style>
   /* --- Estilos do Container para Centralização --- */
@@ -95,7 +82,7 @@
     display: flex;
     align-items: center; 
     justify-content: center; 
-    padding: 24px;
+  padding: 24px 0; /* remove lateral padding to avoid pushing cards on small screens */
     background: #121212;
     box-sizing: border-box;
     /* FIX: Impedir overflow horizontal */
@@ -109,7 +96,8 @@
     max-width: 500px !important; 
     /* Mínimo seguro para evitar overflow em pequenos celulares (pode ser 300px) */
     min-width: 320px !important; 
-    margin: 0 auto; /* Reforça a centralização */
+  margin: 0 auto; /* Reforça a centralização */
+  box-sizing: border-box;
     padding: 28px;
     text-align: center;
     /* Transição para fluidez */

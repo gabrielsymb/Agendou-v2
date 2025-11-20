@@ -4,14 +4,7 @@
 export interface IRegisterData {
   nome: string;
   email: string;
-  password: string;
-}
-
-export interface IPrestador {
-  id: string;
-  prestadorId: string;
-  nome: string;
-  email: string;
+  senha: string; // usar 'senha' para consistência com backend
 }
 // Shared entities and interfaces between backend and frontend
 // Tipagens compartilhadas para o projeto Agenda v3

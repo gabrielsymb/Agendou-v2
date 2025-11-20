@@ -2,24 +2,28 @@
   import './app.css';
   import './styles/global.css';
   import { onMount } from 'svelte';
+  import LayoutContainer from './components/layout/LayoutContainer.svelte';
   import Welcome from './routes/Welcome.svelte';
-  import Login from './routes/Login.svelte';
-  import Register from './routes/Register.svelte';
-  import Home from './routes/Home.svelte';
+  import * as Login from './routes/Login.svelte';
+  import * as Register from './routes/Register.svelte';
+  import * as Home from './routes/Home.svelte';
   import ToastContainer from './features/toast/ToastContainer.svelte';
+  import HamburgerMenu from './components/HamburgerMenu.svelte';
 
   const routes: Record<string, any> = {
     '/': Welcome,
-    '/login': Login,
-    '/register': Register,
-    '/home': Home,
+    '/login': (Login as any).default ?? Login,
+    '/register': (Register as any).default ?? Register,
+    '/home': (Home as any).default ?? Home,
   };
 
   let Component: any = Welcome;
+  let currentPath = '/';
 
   function resolve() {
     const path = location.pathname || '/';
     Component = routes[path] ?? Welcome;
+  currentPath = path;
   }
 
   onMount(() => {
@@ -59,8 +63,13 @@
   });
 </script>
 
-<main class="min-vh-100 bg-light">
-  <svelte:component this={Component} />
-</main>
+  <main class="min-vh-100 bg-light">
+    <LayoutContainer>
+      <svelte:component this={Component} />
+      {#if currentPath !== '/' && currentPath !== '/login' && currentPath !== '/register'}
+        <HamburgerMenu logoAnimated={false} />
+      {/if}
+    </LayoutContainer>
+  </main>
 
 <ToastContainer />

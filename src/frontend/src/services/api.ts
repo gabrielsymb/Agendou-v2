@@ -1,9 +1,22 @@
 // import { showToast } from '../features/toast/store.js'; // removido para evitar ciclo
 
-const BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4000';
+const envBase = (import.meta as any).env?.VITE_API_URL;
+// If VITE_API_URL is set use it. Otherwise, when the app is accessed over the network
+// (e.g. http://10.0.0.100:5173) build the backend URL using the same hostname and
+// the backend port (4000). This lets mobile devices talk to the local dev backend
+// without editing env files. Fall back to localhost for other cases.
+const BASE = envBase || (typeof window !== 'undefined' && window.location && window.location.hostname && window.location.hostname !== 'localhost'
+  ? `http://${window.location.hostname}:4000`
+  : 'http://localhost:4000'
+);
 const TOKEN_KEY = 'agendou_token';
 
-function getToken(){ try{ return localStorage.getItem(TOKEN_KEY) }catch(e){return null} }
+function getToken(){
+  try{
+    // compat: check official key first, then legacy 'token' key
+    return localStorage.getItem(TOKEN_KEY) || localStorage.getItem('token') || null;
+  }catch(e){return null}
+}
 
 async function request(path: string, init: RequestInit = {}) {
   const url = `${BASE}${path}`;

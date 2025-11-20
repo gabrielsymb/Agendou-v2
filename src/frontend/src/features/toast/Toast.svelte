@@ -4,15 +4,15 @@
 
   export let message: string = '';
   export let type: 'success' | 'error' = 'success';
-  export let duration: number = 4000; // ms
+  export let duration: number = 3200; // ms
   export let id: string | null = null;
 
   let progressStyle = '';
   let mounted = false;
 
   onMount(() => {
-    // controla barra de progresso via CSS
-    progressStyle = `--duration: ${duration}ms`;
+  // controla barra de progresso via CSS
+  progressStyle = `--duration: ${duration}ms`;
     mounted = true;
   });
 
@@ -24,11 +24,11 @@
 
 <div class="toast" role="status" aria-live="polite" data-type={type} style={progressStyle}>
   <div class="left">
-    {#if type === 'success'}
-      <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="#0f5132" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M20 6L9 17l-5-5"/></svg>
-    {:else}
-      <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="#6b021d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-    {/if}
+      {#if type === 'success'}
+        <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="var(--toast-success-icon, #0f5132)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M20 6L9 17l-5-5"/></svg>
+      {:else}
+        <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="var(--toast-error-icon, #6b021d)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      {/if}
   </div>
 
   <div class="body">
@@ -48,11 +48,11 @@
     gap: 12px;
     align-items: flex-start;
     padding: 12px 12px 10px 12px;
-    border-radius: 10px;
+  border-radius: 16px;
     min-width: 220px;
     max-width: 360px;
-    color: #071130;
-    box-shadow: 0 10px 30px rgba(2,6,23,0.12);
+      color: var(--toast-text-color, var(--color-text-primary, #071130));
+  box-shadow: 0 10px 30px rgba(2,6,23,0.12);
     transform: translateX(16px);
     opacity: 0;
     animation: slideIn 260ms cubic-bezier(.2,.9,.2,1) forwards;
@@ -83,8 +83,8 @@
   .close:hover { background: rgba(2,6,23,0.06); }
 
   /* colors by type */
-  .toast[data-type="success"] { background: linear-gradient(180deg, #ecfff7 0%, #e6fff2 100%); border: 1px solid rgba(15,129,88,0.12); }
-  .toast[data-type="error"] { background: linear-gradient(180deg, #fff6f7 0%, #fff1f2 100%); border: 1px solid rgba(203,36,68,0.08); }
+  .toast[data-type="success"] { background: linear-gradient(180deg, var(--toast-success-bg-from, #ecfff7) 0%, var(--toast-success-bg-to, #e6fff2) 100%); border: var(--toast-success-border, 1px solid rgba(15,129,88,0.12)); }
+  .toast[data-type="error"] { background: linear-gradient(180deg, var(--toast-error-bg-from, #fff6f7) 0%, var(--toast-error-bg-to, #fff1f2) 100%); border: var(--toast-error-border, 1px solid rgba(203,36,68,0.08)); }
 
   /* progress bar */
   .progress {

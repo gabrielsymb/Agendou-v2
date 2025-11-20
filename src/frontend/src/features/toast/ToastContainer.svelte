@@ -21,7 +21,7 @@
         id={t.id}
         message={t.message}
         type={t.type ?? 'success'}
-        duration={t.timeout ?? 4000}
+        duration={t.timeout ?? 3200}
         on:close={handleClose}
       />
     </button>

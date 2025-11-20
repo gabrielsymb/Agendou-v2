@@ -12,10 +12,10 @@ import { AppError } from "./errors/AppError"; // adicione o import perto dos out
 const PORT = process.env.PORT || 4000;
 // Accept a comma-separated list via FRONTEND_ORIGINS or fallback to both common dev ports
 const FRONTEND_ORIGINS = (
-  process.env.FRONTEND_ORIGINS || "http://localhost:3000,http://localhost:5173"
+  process.env.FRONTEND_ORIGINS || "http://localhost:3000,http://localhost:5173,http://10.0.0.100:5173"
 )
   .split(",")
-  .map((s) => s.trim())
+  .map((s: string) => s.trim())
   .filter(Boolean);
 
 // Inicialização do banco de dados (migrations iniciais)

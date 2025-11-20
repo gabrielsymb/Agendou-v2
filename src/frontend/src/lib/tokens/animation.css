@@ -1,0 +1,6 @@
+/* Animation tokens for Agendou UI */
+:root {
+  --anim-duration-fast: 160ms;
+  --anim-duration-medium: 280ms;
+  --anim-shimmer: 1300ms;
+}

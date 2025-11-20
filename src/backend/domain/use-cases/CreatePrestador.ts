@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { IPrestador } from "../../../shared/entities";
-import { PrestadorRepository } from "../../../backend/persistence/PrestadorRepository";
+import { PrestadorRepository } from "../../persistence/PrestadorRepository";
 import bcrypt from "bcrypt";
 import { randomUUID } from "crypto";
 
@@ -32,7 +32,7 @@ export class CreatePrestador {
       throw new Error("E-mail já registrado.");
     }
 
-    const senhaHash = await bcrypt.hash(validatedData.senha, this.saltRounds);
+  const senhaHash = await bcrypt.hash(validatedData.senha, this.saltRounds);
 
   const id = randomUUID();
     const novoPrestador: IPrestador = {

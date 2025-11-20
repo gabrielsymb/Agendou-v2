@@ -1,38 +1,79 @@
-import express from "express";
-import { ZodError } from "zod";
-import {
-  ReorderAgendamentos,
-  IReorderAgendamentosDTO,
-} from "../domain/use-cases/ReorderAgendamentos";
+import express from 'express';
+import { z } from 'zod';
+import { authMiddleware, AuthedRequest } from '../middlewares/auth'; // usar export nomeado
 
 const agendamentoRoutes = express.Router();
 
-// Rota de Reordenação Manual (Drag-and-Drop) - PUT /api/v1/agendamentos/reorder
-agendamentoRoutes.put("/reorder", (req, res, next) => {
+/**
+ * DTO para reorder — declarado uma vez
+ */
+interface IReorderAgendamentosDTO {
+  agendamentoIds: Array<number | string>;
+}
+
+/**
+ * GET /api/v1/agendamentos?data=YYYY-MM-DD
+ */
+agendamentoRoutes.get('/', authMiddleware, async (req: AuthedRequest, res, next) => {
   try {
-    const prestadorId = (req as any).prestadorId as string;
-    if (!prestadorId)
-      return res.status(401).json({ message: "Prestador não autenticado." });
+    // implementar: use-case ListAgendamentosDia
+    const { data } = req.query;
+    // exemplo placeholder
+    res.json([]);
+  } catch (err) {
+    next(err);
+  }
+});
 
-    const reorderAgendamentos = new ReorderAgendamentos();
-    reorderAgendamentos.execute(
-      req.body as IReorderAgendamentosDTO,
-      prestadorId
-    );
+/**
+ * POST /api/v1/agendamentos
+ */
+agendamentoRoutes.post('/', authMiddleware, async (req: AuthedRequest, res, next) => {
+  try {
+    // implementar criação real
+    res.status(201).json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
 
-    return res
-      .status(200)
-      .json({ message: "Ordem da agenda atualizada com sucesso." });
-  } catch (error) {
-    if (error instanceof ZodError) {
-      return res
-        .status(400)
-        .json({
-          message: "Dados de entrada inválidos para reordenação.",
-          errors: error.issues,
-        });
+/**
+ * PUT /api/v1/agendamentos/:id
+ */
+agendamentoRoutes.put('/:id', authMiddleware, async (req: AuthedRequest, res, next) => {
+  try {
+    // implementar atualização
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * DELETE /api/v1/agendamentos/:id
+ */
+agendamentoRoutes.delete('/:id', authMiddleware, async (req: AuthedRequest, res, next) => {
+  try {
+    // implementar remoção
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * PUT /api/v1/agendamentos/reorder
+ */
+agendamentoRoutes.put('/reorder', authMiddleware, async (req: AuthedRequest, res, next) => {
+  try {
+    const body = req.body as Partial<IReorderAgendamentosDTO>;
+    if (!body || !Array.isArray(body.agendamentoIds)) {
+      return res.status(400).json({ message: 'agendamentoIds é obrigatório' });
     }
-    return next(error);
+    // implementar reorder no DB (transação)
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
   }
 });
 

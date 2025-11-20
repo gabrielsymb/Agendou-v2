@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ButtonPrimary from '../lib/components/shared/ButtonPrimary.svelte';
+  import Button from '../components/Button.svelte';
   import { navigate } from '../lib/router';
   import Logo from '../components/Logo.svelte';
   import Card from '../components/Card.svelte';
@@ -16,8 +16,12 @@
     Clicou... Agendou!</p>
 
     <div class="actions">
-      <ButtonPrimary on:click={() => navigate('/login')}>Entrar</ButtonPrimary>
-      <ButtonPrimary variant="register" on:click={() => navigate('/register')}>Cadastrar</ButtonPrimary>
+      <div class="primary-action">
+        <Button variant="welcome" on:click={() => navigate('/login')}>Entrar</Button>
+      </div>
+      <div class="secondary-action">
+        <Button variant="register" on:click={() => navigate('/register')}>Cadastrar</Button>
+      </div>
     </div>
   </Card>
 </section>
@@ -39,7 +43,7 @@
     align-items: center; /* CHAVE: Centralização vertical */
     justify-content: center; /* CHAVE: Centralização horizontal */
     
-    padding: 24px;
+  padding: 24px 0; /* remove lateral padding on mobile to prevent card shift */
     background: #121212;
     color: #fff;
     box-sizing: border-box; /* Adicionado para garantir que padding não cause overflow */
@@ -56,15 +60,24 @@
     max-width: 500px; 
     min-width: 320px;
     
-    box-sizing: border-box;
+  box-sizing: border-box;
     text-align: center;
     padding: 28px;
     transition: height 0.3s ease-in-out, max-height 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   }
 
-  .title { margin: 0; font-size: 1.8rem; letter-spacing: 0.2px; color: #fff; }
-  .subtitle { margin: 8px 0 20px; color: #b3b3b3; font-size: 0.95rem; }
-  .actions { display: grid; gap: 10px; margin-top: 6px; }
+  .title { margin: 0; font-size: 1.25rem; font-weight: 600; letter-spacing: 0.2px; color: #fff; }
+  .subtitle { margin: 8px 0 20px; color: #b3b3b3; font-size: 1rem; }
+  .actions { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; align-items: stretch; }
+
+  .primary-action { display: block; }
+  .secondary-action { display: block; }
+
+  @media (min-width: 600px) {
+    .actions { flex-direction: row; justify-content: center; gap: 16px; }
+    .primary-action { flex: 0 0 auto; }
+    .secondary-action { flex: 0 0 auto; }
+  }
 
   @media (min-width: 900px) {
     :global(.ag-card.welcome-panel) {

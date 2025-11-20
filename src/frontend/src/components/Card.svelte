@@ -14,14 +14,17 @@
     box-sizing: border-box; /* Fundamental para padding não somar na largura */
     
     background: var(--agendou-card);
-    color: var(--text-on-dark);
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    color: var(--color-text-inverse, #ffffff);
+  border-radius: var(--radius-lg, 16px);
+  padding: var(--spacing-4, 1rem);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.12));
 
     /* Regra padrão de largura do Card (herdada do projeto original):
        Adapta-se ao conteúdo, mas garante um mínimo de 360px */
     max-width: clamp(360px, 90vw, calc(100vw - var(--ag-card-edge-gap, 32px)));
     margin: 1rem auto; /* Centralização padrão */
   }
+
+  /* No hover lift on base Card: structural component only */
+  .ag-card { transition: none; transform: none; }
 </style>

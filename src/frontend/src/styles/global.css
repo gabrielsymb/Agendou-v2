@@ -1,3 +1,12 @@
+/*
+  ======================================================================
+  1. VARIÁVEIS DE COR E TEMA ESCURO
+  ======================================================================
+*/
+
+@import '../lib/tokens/animation.css';
+
+
 /* Global reset e fundo escuro consistente */
 :root {
   --bg: #121212;
@@ -6,6 +15,29 @@
   --muted: #b3b3b3;
 }
 
+@font-face {
+  font-family: 'Inter';
+  src: url('/src/fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/src/fonts/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/*
+  ======================================================================
+  2. RESET UNIVERSAL E APLICAÇÃO DE ESTILOS GLOBAIS
+  ======================================================================
+*/
+
+/* Reset Universal (Aplica-se a todos os elementos) */
 *,
 *::before,
 *::after {
@@ -14,16 +46,143 @@
 
 html, body {
   height: 100%;
-  margin: 0;                 /* remove a margem branca do navegador */
-  background: var(--bg);     /* fundo global escuro */
+  margin: 0; 
+  background: var(--bg); 
   color: var(--text);
+  
+  /* Melhorias de Renderização de Fonte */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+
+  /*
+    Tipografia Padrão: Usa a fonte nativa do sistema (mais rápida) e fallback seguro.
+    As fontes personalizadas Tajawal/Cairo foram removidas, pois não estavam instaladas.
+  */
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+} 
+
+/* Prevent unwanted double-tap zoom on mobile (redundant with viewport but harmless) */
+html, body, #app {
+  /* permite rolagem, mas evita gestures de zoom em navegadores que respeitam touch-action */
+  touch-action: pan-x pan-y;
+  -ms-touch-action: pan-x pan-y;
+  overscroll-behavior-y: auto;
 }
 
-/* opcional: garantir que o root do app ocupe toda a altura */
+/* Utility: disable pinch-zoom and double-tap zoom when applied */
+.no-zoom {
+  touch-action: pan-x pan-y;
+  -ms-touch-action: pan-x pan-y;
+}
+
+/* Hide horizontal overflow globally to prevent layout shift on small screens */
+body {
+  overflow-x: hidden;
+}
+
+/* Hide scrollbars on public auth/welcome screens for a cleaner look (still scrollable) */
+/* Applies to the welcome and auth containers used across Welcome/Login/Register */
+:global(.welcome), :global(.container-auth) {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+:global(.welcome::-webkit-scrollbar), :global(.container-auth::-webkit-scrollbar) {
+  display: none; /* Chrome/Safari */
+}
+
+/* Apply no-zoom to both public and private containers by default class
+   Consumers can add/remove the class where needed. Here we target
+   the most common containers used across the app. */
+:global(.welcome), :global(.container-auth), :global(.container-mobile) {
+  touch-action: pan-x pan-y;
+}
+
+/* Opcional: garantir que o root do app (neste caso, #svelte) ocupe toda a altura */
 #svelte {
   min-height: 100vh;
   display: block;
 }
+
+/* Foundation tokens: espaçamentos, radii, container widths e z-index */
+:root {
+  /* Espaçamentos — escala modular baseada em 1.25 (Major Third) */
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+
+  /* Container Widths */
+  --container-max: 1280px;
+  --container-padding: var(--space-4);
+
+  /* Bordas */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* Z-index padrão */
+  --z-nav: 20;
+  --z-modal: 40;
+  --z-popover: 30;
+  --z-dnd: 50;
+  /* Color tokens (design system) */
+  --color-surface: #0f1724; /* dark surface */
+  --color-accent-primary: #FF7957;
+  --color-accent-400: #FF7957;
+  --color-accent-welcome: #FF8B66;
+  --color-accent-500: #E46B4C;
+  --color-destructive: #B3261E;
+  --color-border-light: rgba(255,255,255,0.06);
+  --color-text-primary: #E6EEF8;
+  --color-text-inverse: #ffffff;
+  --color-muted: rgba(255,255,255,0.6);
+  --agendou-card: linear-gradient(180deg, #16161a 0%, #141416 100%);
+  --duration-base: 180ms;
+  --easing-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  /* brand compatibility */
+  --brand-600: var(--color-accent-primary);
+  --font-family-base: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  /* button sizing tokens */
+  --component-button-min-height: 48px;
+  --component-button-radius: 16px;
+  --component-input-radius: 14px;
+  /* Component semantic borders */
+  --component-button-border: 1px solid rgba(255,255,255,0.06);
+  --component-button-border-weak: 1px solid rgba(255,255,255,0.04);
+  --component-card-border: 1px solid rgba(255,255,255,0.03);
+  /* Toast and spinner borders */
+  --toast-success-border: 1px solid rgba(15,129,88,0.12);
+  --toast-error-border: 1px solid rgba(203,36,68,0.08);
+  --component-spinner-border: 2px solid rgba(255,255,255,0.12);
+  /* Toast text color on light toast backgrounds */
+  --toast-text-color: #071130; /* dark navy used by the toast designs */
+}
+
+/* Grid utilitário */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+
+@media (max-width: 600px) {
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* animation tokens already imported at top */

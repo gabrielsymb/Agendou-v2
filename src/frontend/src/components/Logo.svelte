@@ -1,8 +1,9 @@
 <script lang="ts">
   export let size: number = 64;
   export let animated: boolean = true;
-  const accent = 'var(--accent, #34d399)';
-  const stroke = 'var(--logo-stroke, rgba(255,255,255,0.95))';
+  export let white: boolean = false;
+  const accent = white ? '#FFFFFF' : 'var(--accent, #34d399)';
+  const stroke = white ? '#FFFFFF' : 'var(--logo-stroke, rgba(255,255,255,0.95))';
 </script>
 <svg
   width={size}
@@ -34,16 +35,13 @@
     <rect x="44" y="6" width="6" height="4" rx="1" fill={accent} opacity="0.95" />
   </g>
 
-  <path
-    class="{animated ? 'stroke-anim a' : ''}"
-    d="M20 42 L32 20 L44 42 M25 32 L39 32"
-    fill="none"
-    stroke={accent}
-    stroke-width="3"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    pathLength="1"
-  />
+  <!-- Use text for logo so it matches app typography; lowercase 'a' + exclamation -->
+  <g class="logo-text" transform="translate(32,34)">
+    <!-- lowercase 'a' rendered as text to match global font -->
+    <text class="logo-a" x="-8" y="4" fill={accent} font-family="'Tajawal','Cairo',sans-serif" font-weight="600" font-size="18">a</text>
+    <!-- exclamation, slightly larger and closer; animates when `animated` is true -->
+    <text class="logo-ex {animated ? 'ex-anim' : ''}" x="12" y="-2" fill={accent} font-family="'Tajawal','Cairo',sans-serif" font-weight="700" font-size="22">!</text>
+  </g>
 
   <g class="grid" stroke={stroke} stroke-width="0.8" opacity="0.12">
     <circle cx="22" cy="26" r="0.8" fill={stroke} />
@@ -78,10 +76,13 @@
     animation-delay: 0s; /* começa imediatamente */
   }
 
-  .a {
-    animation-duration: 0.95s; /* ligeiramente menor para terminar em ~1s com atraso */
-    animation-delay: 0.05s;    /* pequeno atraso para sequência sutil */
-  }
+  /* removed old path-based animation selectors; text-based logo uses .ex-anim */
+
+  /* text logo styling */
+  .logo-text text { dominant-baseline: middle; text-anchor: middle; }
+  .logo-a { font-smooth: always; }
+  .logo-ex { transform-origin: center; }
+  .ex-anim { animation-name: draw; animation-duration: 0.9s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-direction: alternate; }
 
   @keyframes draw {
     to {
@@ -89,14 +90,7 @@
     }
   }
 
-  svg:hover .cal-outline {
-    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.35));
-  }
-
-  svg:hover .a {
-    transform-origin: 32px 32px;
-    animation-play-state: running;
-  }
+  svg:hover .cal-outline { filter: drop-shadow(0 6px 10px rgba(0,0,0,0.35)); }
 
   .top-fill { transition: opacity 200ms ease; }
 

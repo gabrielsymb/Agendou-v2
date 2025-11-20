@@ -1,80 +1,88 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import api from '../services/api';
   import Card from '../components/Card.svelte';
+  import CardInteractive from '../components/CardInteractive.svelte';
+  import Spinner from '../components/Spinner.svelte';
   import FAB from '../components/FAB.svelte';
-  import BottomNav from '../components/BottomNav.svelte';
-  import { auth } from '../lib/stores/auth';
-  import { api } from '../services/api';
-  import { navigate } from '../lib/router';
+  import DndContextWrapper from '../components/dnd/DndContextWrapper.svelte';
+  import SortableList from '../components/dnd/SortableList.svelte';
+  import SortableItem from '../components/dnd/SortableItem.svelte';
+  import Section from '../components/layout/Section.svelte';
+  import EmptyState from '../components/EmptyState.svelte';
+  import SkeletonList from '../components/SkeletonList.svelte';
+  import Button from '../components/Button.svelte';
 
-  let prestador: any = null;
-  let services: Array<any> = [];
-  let loading = false;
-  let error: string | null = null;
+  let agendamentos: any[] = [];
+  let loading: boolean = false;
+  let error: string = '';
+  const dateToday: string = new Date().toISOString().substring(0,10); // YYYY-MM-DD
 
-  onMount(() => {
-    // proteger rota: se não houver token/usuário, redireciona para login
-    const unsubToken = auth.token.subscribe((t: string | null) => {
-      if (!t) navigate('/login');
-    });
-
-    const unsubPrest = auth.prestador.subscribe((p: any) => {
-      prestador = p;
-    });
-
-    fetchServices();
-
-    return () => {
-      unsubToken();
-      unsubPrest();
-    };
-  });
-
-  async function fetchServices() {
+  async function fetchAgendamentos(dateStr: string) {
     loading = true;
-    error = null;
+    error = '';
     try {
-      const res: any = await api.get('/api/v1/servicos');
-      services = res?.servicos ?? [];
-    } catch (err: any) {
-      error = err?.message ?? String(err);
+      const res = await api.get(`/api/v1/agendamentos?data=${dateStr}`);
+      agendamentos = res.data || [];
+    } catch (err) {
+      error = 'Erro ao buscar agendamentos';
     } finally {
       loading = false;
     }
   }
+
+  // Home apenas recebe o evento reorder do wrapper; tipado como CustomEvent
+  async function onReorder(event: CustomEvent<{ orderedIds: Array<number|string>, items: any[] }>) {
+    const detail = event.detail ?? {};
+    const { orderedIds, items } = detail;
+    if (!orderedIds || !Array.isArray(orderedIds)) return;
+
+    // otimista: atualiza UI local
+    agendamentos = items ?? agendamentos;
+
+    try {
+      await api.put('/api/v1/agendamentos/reorder', { agendamentoIds: orderedIds });
+    } catch (err) {
+      // em caso de erro, refetch para sincronizar
+      await fetchAgendamentos(dateToday);
+    }
+  }
+
+  onMount(() => {
+    fetchAgendamentos(dateToday);
+  });
 </script>
 
-<div class="container-mobile">
-  <Card>
-    <h2>Bem-vindo{#if prestador && prestador.nome}, {prestador.nome}{/if}!</h2>
-    <p class="text-muted">Aqui estão seus serviços e um resumo rápido do backend.</p>
-
+<Section padded>
+  <div class="container-mobile">
+    
     {#if loading}
-      <p>Carregando...</p>
-    {:else if error}
-      <p class="text-muted">Erro ao carregar: {error}</p>
+      <SkeletonList rows={4} />
+    {:else if !agendamentos || agendamentos.length === 0}
+      <EmptyState title="Nenhum agendamento" subtitle="Você não possui agendamentos para hoje.">
+        <Button slot="actions" on:click={() => fetchAgendamentos(dateToday)}>Recarregar</Button>
+      </EmptyState>
     {:else}
-      {#if services.length === 0}
-        <p class="text-muted">Nenhum serviço cadastrado.</p>
-      {:else}
-        <ul class="services">
-          {#each services as s}
-            <li class="service-item">
-              <strong>{s.nome}</strong>
-              <div class="muted">{s.descricao ?? ''}</div>
-            </li>
-          {/each}
-        </ul>
-      {/if}
+      <DndContextWrapper items={agendamentos} on:reorder={onReorder} on:change={(e) => { agendamentos = e.detail.items }} let:itemsLocal>
+      <SortableList {itemsLocal}>
+        {#each itemsLocal as ag (ag.id)}
+          <SortableItem id={ag.id}>
+            <CardInteractive>
+              <div class="row">
+                <div><strong>{ag.clienteNome}</strong></div>
+                <div class="muted">{new Date(ag.dataHoraInicio).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+              </div>
+              <div class="muted">{ag.servicoNome} • pos {ag.posicao}</div>
+            </CardInteractive>
+          </SortableItem>
+        {/each}
+      </SortableList>
+      </DndContextWrapper>
     {/if}
-
-  </Card>
-</div>
+  </div>
+</Section>
 <FAB />
-<BottomNav />
 
 <style>
-  .services { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; }
-  .service-item { padding: .6rem; background: rgba(255,255,255,0.02); border-radius: 8px; }
   .muted { color: rgba(255,255,255,0.7); font-size: .9rem }
 </style>
