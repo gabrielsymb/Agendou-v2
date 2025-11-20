@@ -24,9 +24,16 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
-  
-  // estratégia simples: tentativa de rede, fallback para cache
-  e.respondWith(
-    fetch(req).catch(() => caches.match(req))
-  );
+
+  // estratégia: tentar rede, se falhar tentar cache, se cache vazio responder 504
+  e.respondWith((async () => {
+    try {
+      const netRes = await fetch(req);
+      return netRes;
+    } catch (err) {
+      const cached = await caches.match(req);
+      if (cached) return cached;
+      return new Response('Gateway: resource not available', { status: 504, statusText: 'Gateway Timeout' });
+    }
+  })());
 });

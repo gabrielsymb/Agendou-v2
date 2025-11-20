@@ -90,19 +90,6 @@
     padding: 0;
   }
 
-  /* evita tap highlight em navegadores touch */
-  .nav-button { -webkit-tap-highlight-color: transparent; }
-
-  /* não remove outline globalmente — use focus-visible para teclado */
-  .nav-button { outline: none; }
-
-  /* mostrar indicador apenas para navegação por teclado */
-  .nav-button:focus-visible {
-    outline: 2px solid var(--agendou-primary, #FF7957);
-    outline-offset: 4px;
-    border-radius: 6px;
-  }
-
   .icon {
     position: relative;
     display: flex;

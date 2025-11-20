@@ -12,6 +12,7 @@
     "@fortawesome/fontawesome-free": "^7.1.0",
     "@iconify/svelte": "^3.1.0",
     "axios": "^1.13.2",
+    "cors": "^2.8.5",
     "dayjs": "^1.11.9",
     "svelte-dnd-action": "^0.9.67",
     "svelte-routing": "^2.10.0"

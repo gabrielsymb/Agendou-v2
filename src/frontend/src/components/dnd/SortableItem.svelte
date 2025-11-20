@@ -1,10 +1,14 @@
 <script lang="ts">
   export let id: string | number;
+  export let item: any;
+  export let activeId: string | number | null = null;
+
+  $: isActive = activeId !== null && `${activeId}` === `${id}`;
 </script>
 
-<li class="sortable-item" data-dnd-id={id} role="listitem">
+<li class="sortable-item" data-dnd-id={id} role="listitem" data-active={isActive} class:is-active={isActive} data-item-id={item?.id}>
   <!-- botão interno é o elemento interativo; mantém toda a área clicável/focável -->
-  <button class="sortable-button" type="button" aria-grabbed="false">
+  <button class="sortable-button" type="button" aria-grabbed={isActive}>
     <slot />
   </button>
 </li>

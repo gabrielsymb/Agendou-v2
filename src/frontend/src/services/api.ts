@@ -25,7 +25,30 @@ async function request(path: string, init: RequestInit = {}) {
   const token = getToken(); if(token) headers['Authorization'] = `Bearer ${token}`;
   const res = await fetch(url, {...init, headers});
   const ct = res.headers.get('content-type') || '';
-  const data = ct.includes('application/json') ? await res.json().catch(()=>null) : await res.text().catch(()=>null);
+  // Ler o corpo uma vez como texto e tentar parsear JSON manualmente.
+  // Isso evita chamadas duplicadas a res.json()/res.text() que podem falhar se o stream já foi lido.
+  let rawBody: string | null = null;
+  try {
+    rawBody = await res.text();
+  } catch (e) {
+    rawBody = null;
+  }
+
+  let data: any = null;
+  if (rawBody) {
+    // Se o content-type indica JSON, ou o corpo parece JSON, tente parsear.
+    const looksLikeJson = ct.includes('application/json') || rawBody.trim().startsWith('{') || rawBody.trim().startsWith('[');
+    if (looksLikeJson) {
+      try {
+        data = JSON.parse(rawBody);
+      } catch (e) {
+        // Não foi possível parsear: deixar rawBody para inspeção
+        data = rawBody;
+      }
+    } else {
+      data = rawBody;
+    }
+  }
   if(!res.ok){
     const msg = (data && ((data as any).message || (data as any).error)) || res.statusText;
     // import dinâmico para evitar ciclo de importação no momento da inicialização
