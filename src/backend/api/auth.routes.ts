@@ -53,6 +53,8 @@ authRoutes.post("/signup", async (req, res) => {
 // Rota de Login
 authRoutes.post("/login", async (req, res) => {
   try {
+  // DEBUG: log body received from client to compare node vs browser requests
+  try { console.log('[POST /auth/login] body=', req.body); } catch(e){}
     const signIn = new SignInPrestador();
     const prestador = await signIn.execute(req.body as ISignInPrestadorDTO);
 

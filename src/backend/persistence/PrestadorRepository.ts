@@ -90,4 +90,19 @@ export class PrestadorRepository {
   }
 
   // Futuros métodos: update, delete, listByPrestadorId etc.
+  /**
+   * Atualiza um prestador por id.
+   */
+  public update(id: string, patch: Partial<IPrestador>): number {
+    const existing = this.findById(id);
+    if (!existing) return 0;
+
+    const updated = { ...existing, ...patch } as IPrestador;
+
+    const stmt = this.db.prepare(`
+            UPDATE prestadores SET nome = ?, email = ?, senhaHash = ? WHERE id = ?
+        `);
+    const info = stmt.run(updated.nome, updated.email, updated.senhaHash, id);
+    return info.changes;
+  }
 }

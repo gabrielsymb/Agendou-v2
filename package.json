@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node ./dist/backend/server.js",
     "dev": "ts-node-dev --respawn --transpile-only ./src/backend/server.ts",
+  "seed": "ts-node-dev --respawn --transpile-only ./src/backend/scripts/seed.ts",
+  "set-seed-password": "ts-node-dev --respawn --transpile-only ./src/backend/scripts/set-seed-password.ts",
+  "mint-token": "ts-node --transpile-only ./src/backend/scripts/mint-token.ts",
     "build": "tsc",
     "test": "jest --config=jest.config.cjs --runInBand"
   },

@@ -22,7 +22,11 @@ export class SignInPrestador {
   ): Promise<Omit<IPrestador, "senhaHash">> {
     const validatedData = SignInPrestadorSchema.parse(data);
 
+    // DEBUG: log incoming email for troubleshooting login issues
+  console.log('[SignInPrestador] attempt email=', validatedData.email);
+
     const prestador = this.repository.findByEmail(validatedData.email);
+  console.log('[SignInPrestador] prestador found=', Boolean(prestador), prestador && { id: prestador.id, email: prestador.email });
 
     if (!prestador) {
       throw new Error("Credenciais inválidas. Verifique e-mail e senha.");
@@ -32,6 +36,7 @@ export class SignInPrestador {
       validatedData.senha,
       prestador.senhaHash
     );
+  console.log('[SignInPrestador] bcrypt.compare result=', isPasswordValid);
 
     if (!isPasswordValid) {
       throw new Error("Credenciais inválidas. Verifique e-mail e senha.");

@@ -7,6 +7,7 @@
   import DndContextWrapper from '../components/dnd/DndContextWrapper.svelte';
   import SortableList from '../components/dnd/SortableList.svelte';
   import SortableItem from '../components/dnd/SortableItem.svelte';
+  import AgendaList from '../components/agenda/AgendaList.svelte';
   import Section from '../components/layout/Section.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import SkeletonList from '../components/SkeletonList.svelte';
@@ -23,8 +24,9 @@
     loading = true;
     error = '';
     try {
-      const res = await api.get(`/api/v1/agendamentos?data=${dateStr}`);
-      agendamentos = res.data || [];
+  const res = await api.get(`/api/v1/agendamentos?data=${dateStr}`);
+  // backend may return the array directly or { data: [...] }
+  agendamentos = Array.isArray(res) ? res : (res && (res as any).data) ? (res as any).data : [];
     } catch (err) {
       error = 'Erro ao buscar agendamentos';
     } finally {
@@ -45,7 +47,7 @@
     // micro-toast de salvando (curta duração)
     showToast('Salvando alterações...', 'info', 900);
     try {
-      await api.put('/api/v1/agendamentos/reorder', { agendamentoIds: orderedIds });
+  await api.put('/api/v1/agendamentos/reorder', { agendamentoIds: orderedIds });
       showToast('Alterações salvas', 'success', 2000);
     } catch (err) {
       // em caso de erro, refetch para sincronizar
@@ -55,6 +57,33 @@
       saving = false;
     }
   }
+
+    async function onConclude(e: CustomEvent<{ id: number|string }>) {
+      const id = e.detail?.id;
+      if (!id) return;
+      try {
+    await api.put(`/api/v1/agendamentos/${id}`, { status: 'concluido' });
+    // micro-feedback: vibrate on success (if available)
+    try { navigator.vibrate?.(60); } catch (err) {}
+    showToast('Agendamento concluído', 'success');
+    await fetchAgendamentos(dateToday);
+      } catch (err) {
+        showToast('Erro ao concluir agendamento', 'error');
+      }
+    }
+
+    async function onCancel(e: CustomEvent<{ id: number|string }>) {
+      const id = e.detail?.id;
+      if (!id) return;
+      try {
+    await api.put(`/api/v1/agendamentos/${id}`, { status: 'cancelado' });
+    try { navigator.vibrate?.(60); } catch (err) {}
+    showToast('Agendamento cancelado', 'success');
+    await fetchAgendamentos(dateToday);
+      } catch (err) {
+        showToast('Erro ao cancelar agendamento', 'error');
+      }
+    }
 
   onMount(() => {
     fetchAgendamentos(dateToday);
@@ -71,26 +100,11 @@
         <Button slot="actions" loading={loading} on:click={() => fetchAgendamentos(dateToday)}>Recarregar</Button>
       </EmptyState>
     {:else}
-  <!-- saving indicator replaced by micro-toasts -->
-      <DndContextWrapper items={agendamentos} on:reorder={onReorder} on:change={(e) => { agendamentos = e.detail.items }} let:itemsLocal>
-      <SortableList {itemsLocal}>
-        {#each itemsLocal as ag (ag.id)}
-          <SortableItem id={ag.id}>
-            <CardInteractive>
-              <div class="row">
-                <div><strong>{ag.clienteNome}</strong></div>
-                <div class="muted">{new Date(ag.dataHoraInicio).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-              </div>
-              <div class="muted">{ag.servicoNome} • pos {ag.posicao}</div>
-            </CardInteractive>
-          </SortableItem>
-        {/each}
-      </SortableList>
-      </DndContextWrapper>
+    <!-- AgendaList with DnD -->
+  <AgendaList items={agendamentos} on:reorder={onReorder} on:conclude={onConclude} on:cancel={onCancel} />
     {/if}
   </div>
   </Section>
 
 <style>
-  .muted { color: rgba(255,255,255,0.7); font-size: .9rem }
 </style>

@@ -28,7 +28,18 @@ export function authMiddleware(
   if (!payload)
     return res.status(401).json({ error: "Invalid or expired token" });
 
-  req.prestadorId = payload.prestadorId;
-  req.prestadorEmail = payload.email;
+  // Compatibilidade: alguns tokens antigos podem não ter a propriedade `prestadorId`.
+  // Para desenvolvimento, aceitamos `payload.id` como fallback.
+  const resolvedPrestadorId = (payload as any).prestadorId || (payload as any).id;
+  if (!resolvedPrestadorId) {
+    // Log útil para debugging (apenas em dev)
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('authMiddleware: token payload missing prestadorId and id', payload);
+    }
+    return res.status(401).json({ error: 'Prestador não autenticado' });
+  }
+
+  req.prestadorId = resolvedPrestadorId;
+  req.prestadorEmail = (payload as any).email;
   next();
 }

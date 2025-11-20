@@ -15,6 +15,8 @@
     // e.detail.items é a nova ordem visual durante o drag
     itemsLocal = e.detail.items;
     dispatch('change', { items: itemsLocal });
+    // notify dragging state and placeholder index
+    dispatch('dragging', { activeId: e.detail.active?.id ?? null, overId: e.detail.over?.id ?? null });
   }
 
   function handleFinalize(e: CustomEvent) {
@@ -22,6 +24,7 @@
     itemsLocal = e.detail.items;
     const orderedIds = itemsLocal.map((i: any) => i.id);
     dispatch('reorder', { orderedIds, items: itemsLocal });
+    dispatch('dragging', { activeId: null, overId: null });
   }
 </script>
 

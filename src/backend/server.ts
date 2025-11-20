@@ -34,20 +34,31 @@ const agendamentoRoutes = require("./api/agendamento.routes").default;
 
 const app = express();
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow non-browser requests (like curl, server-to-server) with no origin
-      if (!origin) return callback(null, true);
-      if (FRONTEND_ORIGINS.includes(origin)) return callback(null, true);
-      // Otherwise block the request and provide a helpful message in the server logs
-      console.warn(`Blocked CORS request from origin: ${origin}`);
-      return callback(new Error("Not allowed by CORS"));
-    },
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+// Em desenvolvimento, permitir todas as origens para facilitar debug local (equivalente a app.use(cors()))
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors());
+} else {
+  // Em produção, mantenha a política restrita baseada em FRONTEND_ORIGINS
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        // Allow non-browser requests (like curl, server-to-server) with no origin
+        if (!origin) return callback(null, true);
+        if (FRONTEND_ORIGINS.includes(origin)) return callback(null, true);
+        // Otherwise block the request and provide a helpful message in the server logs
+        console.warn(`Blocked CORS request from origin: ${origin}`);
+        return callback(new Error("Not allowed by CORS"));
+      },
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      // Garantir que o header Authorization e Content-Type sejam aceitos no preflight
+      allowedHeaders: ["Content-Type", "Authorization"],
+      // Expor headers úteis ao cliente, se necessário
+      exposedHeaders: ["Content-Type", "Authorization"],
+      credentials: true,
+      optionsSuccessStatus: 204,
+    })
+  );
+}
 app.use(json());
 app.use(express.urlencoded({ extended: true }));
 
