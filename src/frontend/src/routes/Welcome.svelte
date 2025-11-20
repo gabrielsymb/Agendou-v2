@@ -12,10 +12,8 @@
     </div>
 
     <h1 id="welcome-title" class="title">Agendou!</h1>
-    <p class="subtitle">Faça agendamentos. 
-    Clicou... Agendou!</p>
+    <p class="subtitle">Faça agendamentos rápidos e fáceis. Clicou... Agendou!</p>
 
-    
   <div class="actions">
       <div class="primary-action">
         <Button variant="welcome" on:click={() => navigate('/login')}>Entrar</Button>

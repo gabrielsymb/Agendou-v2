@@ -7,14 +7,16 @@
   import * as Login from './routes/Login.svelte';
   import * as Register from './routes/Register.svelte';
   import * as Home from './routes/Home.svelte';
+  import * as Settings from './routes/Settings.svelte';
   import ToastContainer from './features/toast/ToastContainer.svelte';
-  import HamburgerMenu from './components/HamburgerMenu.svelte';
 
   const routes: Record<string, any> = {
     '/': Welcome,
     '/login': (Login as any).default ?? Login,
     '/register': (Register as any).default ?? Register,
-    '/home': (Home as any).default ?? Home,
+  '/home': (Home as any).default ?? Home,
+  '/calendar': (Home as any).default ?? Home, /* fallback to Home until Calendar exists */
+  '/settings': (Settings as any).default ?? Settings,
   };
 
   let Component: any = Welcome;
@@ -49,7 +51,7 @@
     document.addEventListener('contextmenu', prevent, { passive: false });
     document.addEventListener('selectstart', prevent, { passive: false });
 
-    console.log('[app] App mounted, initial route ->', location.pathname, 'resolved component ->', Component && Component.name);
+  console.log('[app] App mounted, initial route ->', location.pathname, 'resolved component ->', Component ? (Component.name ?? 'component') : 'none');
 
     return () => {
       window.removeEventListener('popstate', onPop);
@@ -64,11 +66,8 @@
 </script>
 
   <main class="min-vh-100 bg-light">
-    <LayoutContainer>
-  <svelte:component this={Component} />
-      {#if currentPath !== '/' && currentPath !== '/login' && currentPath !== '/register'}
-        <HamburgerMenu logoAnimated={false} />
-      {/if}
+    <LayoutContainer showTabbar={currentPath !== '/' && currentPath !== '/login' && currentPath !== '/register'}>
+      <svelte:component this={Component} />
     </LayoutContainer>
   </main>
 

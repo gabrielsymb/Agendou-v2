@@ -4,7 +4,6 @@
   import Card from '../components/Card.svelte';
   import CardInteractive from '../components/CardInteractive.svelte';
   import Spinner from '../components/Spinner.svelte';
-  import FAB from '../components/FAB.svelte';
   import DndContextWrapper from '../components/dnd/DndContextWrapper.svelte';
   import SortableList from '../components/dnd/SortableList.svelte';
   import SortableItem from '../components/dnd/SortableItem.svelte';
@@ -90,8 +89,7 @@
       </DndContextWrapper>
     {/if}
   </div>
-</Section>
-<FAB />
+  </Section>
 
 <style>
   .muted { color: rgba(255,255,255,0.7); font-size: .9rem }
