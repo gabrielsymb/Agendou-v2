@@ -1,18 +1,18 @@
 /*
-  ======================================================================
+  =======================================================
   1. VARIÁVEIS DE COR E TEMA ESCURO
-  ======================================================================
+  =======================================================
 */
 
 @import '../lib/tokens/animation.css';
 
 
-/* Global reset e fundo escuro consistente */
+/* Global reset and design-system base (light theme per docs) */
 :root {
-  --bg: #121212;
-  --panel: #1e1e1e;
-  --text: #ffffff;
-  --muted: #b3b3b3;
+  --bg: #F4F3F1; /* fundo principal — schema do design */
+  --panel: #FFFFFF; /* superfícies */
+  --text: #2C2C2C; /* texto primário */
+  --muted: #6A6A6A; /* texto secundário */
 }
 
 @font-face {
@@ -108,7 +108,47 @@ body {
 
 /* Foundation tokens: espaçamentos, radii, container widths e z-index */
 :root {
-  /* Espaçamentos — escala modular baseada em 1.25 (Major Third) */
+  /* ============================================
+    CORE COLOR TOKENS — UNIVERSAL (aligned to design system)
+    ============================================ */
+
+  /* Backgrounds */
+  --color-bg: #F4F3F1;                /* fundo principal */
+  --color-surface: #FFFFFF;           /* cards/painéis */
+  --color-surface-2: #F7F7F6;         /* superfície alternativa */
+  --color-surface-3: #F4F3F1;
+
+  /* Foreground / Text */
+  --color-text-primary: #2C2C2C;
+  --color-text-secondary: #6A6A6A;
+  --color-text-muted: rgba(44,44,44,0.35);
+  --color-text-inverse: #FFFFFF;
+
+  /* Border */
+  --color-border: rgba(0,0,0,0.08);
+  --color-border-strong: rgba(0,0,0,0.12);
+
+  /* Brand / Accent — warm accent per design */
+  --color-accent-300: #FF8A70;   /* Coral claro */
+  --color-accent-400: #FF7957;   /* Salmão suave (primary) */
+  --color-accent-500: #E46B4C;   /* Terracota (hover/active) */
+  --color-accent-hover: #E46B4C;
+  --color-accent-info: #FF8A70; /* swipe indicators */
+
+  /* Feedback / System */
+  --color-danger: #E74C3C;
+  --color-warning: #F1C40F;
+  --color-success: #4CAF50;
+
+  /* ============================================
+    RADII & SPACING
+    ============================================ */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-card: 18px;
+
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
@@ -117,52 +157,50 @@ body {
   --space-8: 2rem;
   --space-10: 2.5rem;
 
-  /* Container Widths */
-  --container-max: 1280px;
-  --container-padding: var(--space-4);
+  /* ============================================
+    SHADOWS (consistentes entre componentes)
+    ============================================ */
+  --shadow-soft: 0 4px 12px rgba(0,0,0,0.25);
+  --shadow-md: 0 6px 18px rgba(0,0,0,0.32);
+  --shadow-lg: 0 12px 28px rgba(0,0,0,0.42);
 
-  /* Bordas */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-
-  /* Z-index padrão */
+  /* Top-level elevations */
   --z-nav: 20;
-  --z-modal: 40;
   --z-popover: 30;
-  --z-dnd: 50;
-  /* Color tokens (design system) */
-  --color-surface: #0f1724; /* dark surface */
-  --color-accent-primary: #FF7957;
-  --color-accent-400: #FF7957;
-  --color-accent-welcome: #FF8B66;
-  --color-accent-500: #E46B4C;
-  --color-destructive: #B3261E;
-  --color-border-light: rgba(255,255,255,0.06);
-  --color-text-primary: #E6EEF8;
-  --color-text-inverse: #ffffff;
-  --color-muted: rgba(255,255,255,0.6);
-  --agendou-card: linear-gradient(180deg, #16161a 0%, #141416 100%);
-  --duration-base: 180ms;
-  --easing-standard: cubic-bezier(0.22, 1, 0.36, 1);
-  /* brand compatibility */
-  --brand-600: var(--color-accent-primary);
-  --font-family-base: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  /* button sizing tokens */
-  --component-button-min-height: 48px;
-  --component-button-radius: 16px;
-  --component-input-radius: 14px;
-  /* Component semantic borders */
-  --component-button-border: 1px solid rgba(255,255,255,0.06);
-  --component-button-border-weak: 1px solid rgba(255,255,255,0.04);
-  --component-card-border: 1px solid rgba(255,255,255,0.03);
-  /* Toast and spinner borders */
-  --toast-success-border: 1px solid rgba(15,129,88,0.12);
-  --toast-error-border: 1px solid rgba(203,36,68,0.08);
-  --component-spinner-border: 2px solid rgba(255,255,255,0.12);
-  /* Toast text color on light toast backgrounds */
-  --toast-text-color: #071130; /* dark navy used by the toast designs */
+  --z-modal: 40;
+  --z-toast: 50;
+  --z-dnd: 60;
+
+  /* Preserved tokens (loader / toast) — keep names for compatibility */
+  --loader-size: 32px;
+  --spinner-on-primary: #ffffff;
+  --toast-text-color: #071130;
+}
+
+/* token aliases for component-level usage (Blueprint 5.5) */
+:root {
+  --color-card: var(--color-surface);
+  --color-text: var(--color-text-primary);
+  --color-text-inverse: var(--color-text-inverse);
+  --color-accent-primary: var(--color-primary);
+  --color-destructive: var(--color-danger);
+  --color-border-light: var(--color-border);
+}
+/* Design system aliases used by components */
+:root {
+  --agendou-primary: var(--color-accent-400); /* #FF7957 */
+  --agendou-accent-hover: var(--color-accent-500); /* #E46B4C */
+  --agendou-card: var(--color-surface);
+  --agendou-secondary: var(--color-text-secondary);
+  --text-on-light: var(--color-text-primary);
+
+  /* Component-facing aliases kept for compatibility */
+  --color-accent-primary: var(--agendou-primary);
+  --color-card: var(--agendou-card);
+  --color-text: var(--text-on-light);
+  --color-text-inverse: var(--color-text-inverse);
+  --color-destructive: var(--color-danger);
+  --color-border-light: var(--color-border);
 }
 
 /* Grid utilitário */

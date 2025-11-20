@@ -9,6 +9,8 @@
 
   let progressStyle = '';
   let mounted = false;
+  // micro-toasts: short, borderless, no progress/close button
+  $: isMicro = duration <= 1200;
 
   onMount(() => {
   // controla barra de progresso via CSS
@@ -22,7 +24,7 @@
   }
 </script>
 
-<div class="toast" role="status" aria-live="polite" data-type={type} style={progressStyle}>
+<div class="toast" role="status" aria-live="polite" data-type={type} style={progressStyle} class:micro={isMicro}>
   <div class="left">
       {#if type === 'success'}
         <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="var(--toast-success-icon, #0f5132)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M20 6L9 17l-5-5"/></svg>
@@ -51,7 +53,7 @@
   border-radius: 16px;
     min-width: 220px;
     max-width: 360px;
-      color: var(--toast-text-color, var(--color-text-primary, #071130));
+      color: var(--color-text, var(--toast-text-color, var(--color-text-primary, #071130)));
   box-shadow: 0 10px 30px rgba(2,6,23,0.12);
     transform: translateX(16px);
     opacity: 0;
@@ -81,6 +83,22 @@
     border-radius: 6px;
   }
   .close:hover { background: rgba(2,6,23,0.06); }
+
+  /* micro-toast: short, borderless, no progress bar, no close button */
+  .toast.micro {
+    padding: 8px 10px;
+    border: none !important;
+    box-shadow: none;
+    min-width: 140px;
+    max-width: 260px;
+    border-radius: 12px;
+    font-size: 13px;
+  animation: slideIn var(--anim-duration-fast,160ms) cubic-bezier(.2,.9,.2,1) forwards;
+  }
+  .toast.micro .close { display: none; }
+  .toast.micro .progress { display: none; }
+  .toast.micro[data-type="success"] { background: var(--toast-success-bg-from, #ecfff7); }
+  .toast.micro[data-type="error"] { background: var(--toast-error-bg-from, #fff6f7); }
 
   /* colors by type */
   .toast[data-type="success"] { background: linear-gradient(180deg, var(--toast-success-bg-from, #ecfff7) 0%, var(--toast-success-bg-to, #e6fff2) 100%); border: var(--toast-success-border, 1px solid rgba(15,129,88,0.12)); }

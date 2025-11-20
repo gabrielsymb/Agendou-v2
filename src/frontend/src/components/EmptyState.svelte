@@ -22,6 +22,6 @@
   .empty-state { display:flex; flex-direction:column; align-items:center; gap:12px; padding:24px; text-align:center; }
   .empty-state .icon { width: 96px; height: 96px; display:flex; align-items:center; justify-content:center; }
   .empty-state .title { margin:0; font-size:1.1rem; font-weight:600; }
-  .empty-state .subtitle { margin:0; color:var(--color-muted); }
+  .empty-state .subtitle { margin:0; color:var(--color-text-muted); }
   .empty-state .actions { margin-top:8px; }
 </style>

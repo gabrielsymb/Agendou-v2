@@ -48,7 +48,8 @@
 
 <Section padded>
   <div class="container-auth">
-    <Card className="auth-panel">
+    
+  <Card class="auth-panel">
     <h2 class="auth-title">Entrar</h2>
     
     <form on:submit|preventDefault={handleSubmit} style="display:flex;flex-direction:column;gap:.75rem;">
@@ -67,9 +68,9 @@
       {/if}
     </form>
     
-    <div style="margin-top: 1rem; font-size: 0.9rem; color: #b3b3b3; text-align: center;">
+  <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-secondary); text-align: center;">
        Não tem conta? 
-       <a href="/register" on:click|preventDefault={() => navigate('/register')} style="color: var(--primary-color, #4facfe);">Cadastre-se</a>
+     <a href="/register" on:click|preventDefault={() => navigate('/register')} style="color: var(--color-accent-primary);">Cadastre-se</a>
     </div>
     </Card>
   </div>
@@ -83,7 +84,7 @@
     align-items: center; 
     justify-content: center; 
   padding: 24px 0; /* remove lateral padding to avoid pushing cards on small screens */
-    background: #121212;
+  background: var(--color-bg);
     box-sizing: border-box;
     /* FIX: Impedir overflow horizontal */
     overflow-x: hidden; 
@@ -105,10 +106,10 @@
   }
   
   /* Resolvendo o aviso 'Unused CSS selector' do h2 */
-  .auth-title {
+    .auth-title {
     margin-top: 0;
     margin-bottom: 1.5rem;
-    color: #fff;
+    color: var(--color-text);
   }
 
   /* Resolvendo os avisos 'Unused CSS selector' de mensagens */

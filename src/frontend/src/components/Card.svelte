@@ -3,7 +3,7 @@
   export let className = ''; 
 </script>
 
-<div class={`ag-card ${className}`} role="region">
+<div {...$$restProps} class={`ag-card ${className}`} role="region">
   <slot />
 </div>
 
@@ -12,19 +12,19 @@
     /* Regras neutras: OBRIGATÓRIAS para qualquer Card */
     width: auto; /* O Card deve se adaptar ao conteúdo por padrão */
     box-sizing: border-box; /* Fundamental para padding não somar na largura */
-    
-    background: var(--agendou-card);
-    color: var(--color-text-inverse, #ffffff);
-  border-radius: var(--radius-lg, 16px);
-  padding: var(--spacing-4, 1rem);
-  box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.12));
 
-    /* Regra padrão de largura do Card (herdada do projeto original):
-       Adapta-se ao conteúdo, mas garante um mínimo de 360px */
-    max-width: clamp(360px, 90vw, calc(100vw - var(--ag-card-edge-gap, 32px)));
-    margin: 1rem auto; /* Centralização padrão */
+    /* Design system tokens (light surface) */
+    background: var(--color-surface, #ffffff);
+    color: var(--color-text, #2C2C2C);
+    border-radius: var(--radius-md, 8px);
+    padding: var(--space-4, 1rem);
+    box-shadow: 0 -1px 6px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+
+    /* Largura e centralização compatíveis com telas móveis */
+    max-width: clamp(320px, 90vw, calc(100vw - var(--ag-card-edge-gap, 32px)));
+    margin: 0.75rem auto;
   }
 
-  /* No hover lift on base Card: structural component only */
-  .ag-card { transition: none; transform: none; }
+  /* Transições sutis para micro-interações */
+  .ag-card { transition: transform 0.18s cubic-bezier(0.16,1,0.3,1), box-shadow 0.18s ease, background-color 0.2s ease, color 0.2s ease; }
 </style>

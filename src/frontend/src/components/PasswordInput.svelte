@@ -64,7 +64,7 @@
   display: block; 
   font-size: var(--font-size-sm, .9rem); 
   margin-bottom: .25rem; 
-  color: var(--component-input-placeholder, rgba(255,255,255,0.85)); 
+  color: var(--component-input-placeholder, var(--color-text-muted, rgba(44,44,44,0.35))); 
   font-weight: var(--font-weight-medium, 500);
   }
 
@@ -96,7 +96,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: var(--color-muted, rgba(255,255,255,0.6));
+  color: var(--color-text-muted, rgba(44,44,44,0.35));
   }
 
   /* Opcional: Adicionar um efeito visual ao focar o input */

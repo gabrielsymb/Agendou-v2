@@ -65,7 +65,8 @@
 
 <Section padded>
   <div class="container-auth">
-    <Card className="auth-panel">
+    
+  <Card class="auth-panel">
     <h2 class="auth-title">Criar conta</h2>
     
     <form on:submit|preventDefault={handleSubmit} style="display:flex;flex-direction:column;gap:.75rem;">
@@ -81,9 +82,9 @@
       {#if successMsg}<div class="message-success">{successMsg}</div>{/if}
     </form>
     
-    <div style="margin-top: 1rem; font-size: 0.9rem; color: #ccc; text-align: center;">
+  <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-secondary); text-align: center;">
        Já tem conta? 
-       <a href="/login" on:click|preventDefault={() => navigate('/login')} style="color: var(--primary-color, #4facfe);">Entrar</a>
+     <a href="/login" on:click|preventDefault={() => navigate('/login')} style="color: var(--color-accent-primary);">Entrar</a>
     </div>
     </Card>
   </div>
@@ -97,7 +98,7 @@
     align-items: center; /* Centraliza verticalmente */
     justify-content: center; /* Centraliza horizontalmente */
   padding: 24px 0; /* remove lateral padding on mobile */
-    background: #121212;
+  background: var(--color-bg);
     box-sizing: border-box;
     overflow-x: hidden; /* Correção para telas pequenas */
   }
@@ -120,7 +121,7 @@
   .auth-title {
     margin-top: 0;
     margin-bottom: 1.5rem;
-    color: #fff;
+    color: var(--color-text);
   }
 
   /* Reaplicando os estilos de .error com a nova classe */

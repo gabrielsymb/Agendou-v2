@@ -6,8 +6,8 @@
 </script>
 
 <section class="welcome" role="main" aria-labelledby="welcome-title">
-  <Card className="welcome-panel">
-    <div class="logo-wrap" style="display:flex;justify-content:center;margin-bottom:14px;">
+  <Card class="welcome-panel">
+    <div class="logo-wrap">
       <Logo size={96} />
     </div>
 
@@ -15,7 +15,8 @@
     <p class="subtitle">Faça agendamentos. 
     Clicou... Agendou!</p>
 
-    <div class="actions">
+    
+  <div class="actions">
       <div class="primary-action">
         <Button variant="welcome" on:click={() => navigate('/login')}>Entrar</Button>
       </div>
@@ -44,11 +45,13 @@
     justify-content: center; /* CHAVE: Centralização horizontal */
     
   padding: 24px 0; /* remove lateral padding on mobile to prevent card shift */
-    background: #121212;
-    color: #fff;
+    background: var(--color-bg);
+    color: var(--color-text);
     box-sizing: border-box; /* Adicionado para garantir que padding não cause overflow */
     overflow-x: hidden; 
   }
+
+  .logo-wrap { display:flex; justify-content:center; margin-bottom:14px; }
 
   /* --- Estilo do Card (ESPECÍFICO para Welcome) --- */
   :global(.ag-card.welcome-panel) {
@@ -66,8 +69,8 @@
     transition: height 0.3s ease-in-out, max-height 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   }
 
-  .title { margin: 0; font-size: 1.25rem; font-weight: 600; letter-spacing: 0.2px; color: #fff; }
-  .subtitle { margin: 8px 0 20px; color: #b3b3b3; font-size: 1rem; }
+  .title { margin: 0; font-size: 1.25rem; font-weight: 600; letter-spacing: 0.2px; color: var(--color-text); }
+  .subtitle { margin: 8px 0 20px; color: var(--color-text-secondary) !important; font-size: 1rem; line-height:1.35; opacity:1 !important; visibility:visible !important; }
   .actions { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; align-items: stretch; }
 
   .primary-action { display: block; }

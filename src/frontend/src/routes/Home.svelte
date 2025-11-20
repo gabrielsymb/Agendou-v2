@@ -12,9 +12,11 @@
   import EmptyState from '../components/EmptyState.svelte';
   import SkeletonList from '../components/SkeletonList.svelte';
   import Button from '../components/Button.svelte';
+  import { showToast } from '../features/toast/store';
 
   let agendamentos: any[] = [];
   let loading: boolean = false;
+  let saving: boolean = false;
   let error: string = '';
   const dateToday: string = new Date().toISOString().substring(0,10); // YYYY-MM-DD
 
@@ -40,11 +42,18 @@
     // otimista: atualiza UI local
     agendamentos = items ?? agendamentos;
 
+    saving = true;
+    // micro-toast de salvando (curta duração)
+    showToast('Salvando alterações...', 'info', 900);
     try {
       await api.put('/api/v1/agendamentos/reorder', { agendamentoIds: orderedIds });
+      showToast('Alterações salvas', 'success', 2000);
     } catch (err) {
       // em caso de erro, refetch para sincronizar
       await fetchAgendamentos(dateToday);
+      showToast('Erro ao salvar alterações', 'error', 4000);
+    } finally {
+      saving = false;
     }
   }
 
@@ -60,9 +69,10 @@
       <SkeletonList rows={4} />
     {:else if !agendamentos || agendamentos.length === 0}
       <EmptyState title="Nenhum agendamento" subtitle="Você não possui agendamentos para hoje.">
-        <Button slot="actions" on:click={() => fetchAgendamentos(dateToday)}>Recarregar</Button>
+        <Button slot="actions" loading={loading} on:click={() => fetchAgendamentos(dateToday)}>Recarregar</Button>
       </EmptyState>
     {:else}
+  <!-- saving indicator replaced by micro-toasts -->
       <DndContextWrapper items={agendamentos} on:reorder={onReorder} on:change={(e) => { agendamentos = e.detail.items }} let:itemsLocal>
       <SortableList {itemsLocal}>
         {#each itemsLocal as ag (ag.id)}

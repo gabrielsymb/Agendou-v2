@@ -8,7 +8,7 @@
 
 <style>
   .ag-skeleton {
-    background: var(--surface-200, #1f1f1f);
+    background: var(--color-surface-2, #131418);
     position: relative;
     overflow: hidden;
     display: block;
@@ -20,8 +20,8 @@
     top: 0; left: -120%;
     height: 100%;
     width: 220%;
-    /* subtle multi-stop ramp to avoid hard bands */
-    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.12), rgba(255,255,255,0.2), rgba(255,255,255,0));
+  /* subtle multi-stop ramp derived from --color-border-light */
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.12), var(--color-border-light, rgba(255,255,255,0.06)), rgba(255,255,255,0));
     animation: ag-shimmer--v4 var(--anim-shimmer, 1300ms) linear infinite;
     transform: translateX(0);
     will-change: transform, opacity;

@@ -65,7 +65,7 @@
 
   <main class="min-vh-100 bg-light">
     <LayoutContainer>
-      <svelte:component this={Component} />
+  <svelte:component this={Component} />
       {#if currentPath !== '/' && currentPath !== '/login' && currentPath !== '/register'}
         <HamburgerMenu logoAnimated={false} />
       {/if}

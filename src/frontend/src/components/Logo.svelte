@@ -2,8 +2,8 @@
   export let size: number = 64;
   export let animated: boolean = true;
   export let white: boolean = false;
-  const accent = white ? '#FFFFFF' : 'var(--accent, #34d399)';
-  const stroke = white ? '#FFFFFF' : 'var(--logo-stroke, rgba(255,255,255,0.95))';
+  const accent = white ? 'var(--color-text-inverse, #FFFFFF)' : 'var(--color-accent-primary, #FF7957)';
+  const stroke = white ? 'var(--color-text-inverse, #FFFFFF)' : 'var(--logo-stroke, rgba(44,44,44,0.12))';
 </script>
 <svg
   width={size}
@@ -13,9 +13,9 @@
   aria-label="Logotipo Agendou - calendário com A"
   xmlns="http://www.w3.org/2000/svg"
 >
-  <rect x="3" y="6" width="58" height="52" rx="8" fill="rgba(255,255,255,0.02)" />
+  <rect x="3" y="6" width="58" height="52" rx="8" fill="var(--color-surface-2, rgba(0,0,0,0.02))" />
 
-  <rect class="top-fill" x="6" y="8" width="52" height="12" rx="4" fill={accent} opacity="0.12" />
+  <rect class="top-fill" x="6" y="8" width="52" height="12" rx="4" fill={accent} opacity="0.14" />
 
   <rect
     class="cal-outline {animated ? 'stroke-anim cal' : ''}"
@@ -37,10 +37,10 @@
 
   <!-- Use text for logo so it matches app typography; lowercase 'a' + exclamation -->
   <g class="logo-text" transform="translate(32,34)">
-    <!-- lowercase 'a' rendered as text to match global font -->
-    <text class="logo-a" x="-8" y="4" fill={accent} font-family="'Tajawal','Cairo',sans-serif" font-weight="600" font-size="18">a</text>
-    <!-- exclamation, slightly larger and closer; animates when `animated` is true -->
-    <text class="logo-ex {animated ? 'ex-anim' : ''}" x="12" y="-2" fill={accent} font-family="'Tajawal','Cairo',sans-serif" font-weight="700" font-size="22">!</text>
+  <!-- lowercase 'a' rendered as text to match global font -->
+  <text class="logo-a" x="-8" y="4" fill={accent} font-family="'Inter',sans-serif" font-weight="600" font-size="18">a</text>
+  <!-- exclamation, slightly larger and closer; animates when `animated` is true -->
+  <text class="logo-ex {animated ? 'ex-anim' : ''}" x="12" y="-2" fill={accent} font-family="'Inter',sans-serif" font-weight="700" font-size="22">!</text>
   </g>
 
   <g class="grid" stroke={stroke} stroke-width="0.8" opacity="0.12">

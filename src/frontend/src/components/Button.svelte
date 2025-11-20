@@ -37,7 +37,7 @@
     <slot name="icon-left" />
     {#if loading}
       <span class="ag-btn__label"><!-- spinner -->
-        <Spinner size={18} />
+  <Spinner size={18} stroke={2.5} color="var(--color-text-inverse, #FFFFFF)" />
       </span>
     {:else}
       <span class="ag-btn__label"><slot /></span>
@@ -58,7 +58,7 @@
     font-family: var(--font-family-base, Inter), sans-serif;
     font-weight: 600;
     line-height: 1;
-    color: var(--color-text-primary, #2C2C2C);
+  color: var(--color-text, var(--color-text-primary, #2C2C2C));
     background: transparent;
     cursor: pointer;
     transition: background var(--duration-base, 180ms) var(--easing-standard, cubic-bezier(0.22, 1, 0.36, 1)),
@@ -108,8 +108,8 @@
 
   /* PRIMARY */
   .ag-btn--primary {
-    background: var(--color-accent-primary, #FF7957);
-    color: var(--color-text-inverse, #FFFFFF);
+  background: var(--color-accent-400, #FF7957);
+  color: var(--color-text-inverse, #FFFFFF);
     padding: var(--s12, 12px) var(--s16, 16px);
   border-radius: var(--component-button-radius, 16px);
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
@@ -134,7 +134,7 @@
   /* SECONDARY */
   .ag-btn--secondary {
     background: var(--color-surface, #FFFFFF);
-    color: var(--color-accent-primary, #E46B4C);
+    color: var(--color-accent-400, #FF7957);
     padding: var(--s12, 12px) var(--s16, 16px);
   border-radius: var(--component-button-radius, 16px);
     border: var(--component-button-border, 1px solid rgba(0,0,0,0.06));
@@ -201,7 +201,7 @@
 
   /* WELCOME - special accent used on welcome screen */
   .ag-btn--welcome {
-    background: var(--color-accent-welcome, var(--color-accent-primary, #FF7957));
+    background: var(--color-accent-400, #FF7957);
     color: var(--color-surface, #FFFFFF);
     padding: var(--s12, 12px) var(--s16, 16px);
     border-radius: var(--component-button-radius, 16px);
@@ -220,7 +220,7 @@
 
   /* Focus (WCAG) */
   .ag-btn:focus-visible {
-    outline: 2px solid var(--color-accent-primary, #FF7957);
+    outline: 2px solid var(--color-accent-400, #FF7957);
     outline-offset: 2px;
   }
 
