@@ -7,6 +7,8 @@
     "start": "node ./dist/backend/server.js",
     "dev": "ts-node-dev --respawn --transpile-only ./src/backend/server.ts",
   "seed": "ts-node-dev --respawn --transpile-only ./src/backend/scripts/seed.ts",
+  "seed-dates": "ts-node-dev --respawn --transpile-only ./src/backend/scripts/seed-dates.ts",
+  "test-backend": "jest --config=jest.config.cjs --runInBand src/backend",
   "set-seed-password": "ts-node-dev --respawn --transpile-only ./src/backend/scripts/set-seed-password.ts",
   "mint-token": "ts-node --transpile-only ./src/backend/scripts/mint-token.ts",
     "build": "tsc",

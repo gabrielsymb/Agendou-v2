@@ -28,14 +28,18 @@ async function main(){
     { id: randomUUID(), prestadorId: prest.id, nome: 'Cliente B', telefone: '81999990002' },
     { id: randomUUID(), prestadorId: prest.id, nome: 'Cliente C', telefone: '81999990003' },
   ];
-  clientes.forEach(c => clienteRepo.create(c as any));
+  // Criar clientes e aguardar todas as operações
+  const clientePromises = clientes.map(c => clienteRepo.create(c as any));
+  await Promise.all(clientePromises);
 
   // Create sample services
   const servicos = [
     { id: randomUUID(), prestadorId: prest.id, nome: 'Corte', duracaoMinutos: 30, preco: 40, posicao: servRepo.getNextPosicao(prest.id) },
     { id: randomUUID(), prestadorId: prest.id, nome: 'Barba', duracaoMinutos: 20, preco: 25, posicao: servRepo.getNextPosicao(prest.id) },
   ];
-  servicos.forEach(s => servRepo.create(s as any));
+  // Criar serviços e aguardar
+  const servicoPromises = servicos.map(s => servRepo.create(s as any));
+  await Promise.all(servicoPromises);
 
   // Create agendamentos for today
   const startDate = new Date();
@@ -58,7 +62,9 @@ async function main(){
     });
   }
 
-  agendamentos.forEach(a => agRepo.create(a));
+  // Criar agendamentos e aguardar
+  const agPromises = agendamentos.map(a => agRepo.create(a));
+  await Promise.all(agPromises);
 
   console.log('Seed aplicada para prestador', prest.id, 'clientes=', clientes.length, 'servicos=', servicos.length, 'agendamentos=', agendamentos.length);
 }

@@ -5,9 +5,7 @@ import express from "express";
 import cors from "cors";
 import { initializeDatabase } from "./database";
 import { json } from "body-parser";
-import { AppError } from "./errors/AppError"; // adicione o import perto dos outros
-// Note: route modules import repositories that use the DB instance at module init.
-// We will require them after running initializeDatabase() to ensure migrations run first.
+import { AppError } from "./errors/AppError"; // 
 
 const PORT = process.env.PORT || 4000;
 // Accept a comma-separated list via FRONTEND_ORIGINS or fallback to both common dev ports

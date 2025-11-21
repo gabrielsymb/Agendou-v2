@@ -38,8 +38,19 @@ export function authMiddleware(
     }
     return res.status(401).json({ error: 'Prestador não autenticado' });
   }
-
   req.prestadorId = resolvedPrestadorId;
   req.prestadorEmail = (payload as any).email;
+
+  // === TEMP DEBUG START ===
+  try {
+    if (process.env.NODE_ENV !== 'production') {
+      const email = (payload as any).email || '(no-email)';
+      const matchesSeed = resolvedPrestadorId === 'prestador-seed-1';
+      console.log(`[DEBUG][auth] prestadorId=${resolvedPrestadorId} email=${email} matchesSeed=${matchesSeed}`);
+    }
+  } catch (dbg) {
+    // ignore debug errors
+  }
+  // === TEMP DEBUG END ===
   next();
 }

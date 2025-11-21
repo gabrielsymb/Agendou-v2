@@ -26,6 +26,7 @@
     try {
   const res = await api.get(`/api/v1/agendamentos?data=${dateStr}`);
   // backend may return the array directly or { data: [...] }
+  console.log('[Home] raw response from api.get:', res);
   agendamentos = Array.isArray(res) ? res : (res && (res as any).data) ? (res as any).data : [];
     } catch (err) {
       error = 'Erro ao buscar agendamentos';

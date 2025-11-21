@@ -10,9 +10,10 @@ async function main(){
   }
   const prestRepo = new PrestadorRepository();
   const agRepo = new AgendamentoRepository();
-  let prest:any;
-  if(arg.includes('@')) prest = prestRepo.findByEmail(arg.toLowerCase());
-  else prest = prestRepo.findById(arg);
+  let prest: any;
+  // Suporta repositórios síncronos ou assíncronos: await funciona para ambos
+  if (arg.includes('@')) prest = await prestRepo.findByEmail(arg.toLowerCase());
+  else prest = await prestRepo.findById(arg);
   if(!prest){
     console.error('Prestador não encontrado para', arg);
     process.exit(2);
@@ -21,9 +22,13 @@ async function main(){
   const day = dateArg || new Date().toISOString().substring(0,10);
   const start = new Date(day + 'T00:00:00.000Z').toISOString();
   const end = new Date(day + 'T23:59:59.999Z').toISOString();
-  const rows = agRepo.findByDay(prest.id, start, end);
+  const rows = await agRepo.findByDay(prest.id, start, end);
   console.log('Prestador:', prest.id, prest.email, 'agendamentos on', day, '=', rows.length);
-  console.table(rows.map(r => ({ id: r.id, cliente: r.clienteNome, servico: r.servicoNome, inicio: r.dataHoraInicio, status: r.status })));
+  if (rows.length === 0) {
+    console.log('Nenhum agendamento encontrado para esse dia.');
+  } else {
+    console.table(rows.map(r => ({ id: r.id, cliente: r.clienteNome, servico: r.servicoNome, inicio: r.dataHoraInicio, status: r.status })));
+  }
 }
 
 main().catch(e=>{ console.error(e); process.exit(1); });

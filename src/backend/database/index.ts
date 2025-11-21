@@ -15,7 +15,10 @@ if (!fs.existsSync(dbDir)) {
 }
 
 // Cria a instância do banco de dados
-const db = new Database(dbPathAbsolute, { verbose: console.log });
+// Habilita verbose apenas se DB_VERBOSE estiver definido (1 ou 'true')
+const dbVerboseFlag = (process.env.DB_VERBOSE || '').toString().toLowerCase();
+const dbVerbose = dbVerboseFlag === '1' || dbVerboseFlag === 'true';
+const db = new Database(dbPathAbsolute, dbVerbose ? { verbose: console.log } : {});
 
 /**
  * Função para inicializar as tabelas do banco de dados (Migrations iniciais).
