@@ -41,9 +41,10 @@ export function authMiddleware(
   req.prestadorId = resolvedPrestadorId;
   req.prestadorEmail = (payload as any).email;
 
-  // === TEMP DEBUG START ===
+  // Debug logs: ativar apenas quando DEBUG=1 para evitar exposição acidental
   try {
-    if (process.env.NODE_ENV !== 'production') {
+    const debug = (process.env.DEBUG || '').toString() === '1';
+    if (debug) {
       const email = (payload as any).email || '(no-email)';
       const matchesSeed = resolvedPrestadorId === 'prestador-seed-1';
       console.log(`[DEBUG][auth] prestadorId=${resolvedPrestadorId} email=${email} matchesSeed=${matchesSeed}`);
@@ -51,6 +52,5 @@ export function authMiddleware(
   } catch (dbg) {
     // ignore debug errors
   }
-  // === TEMP DEBUG END ===
   next();
 }

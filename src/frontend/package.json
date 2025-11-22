@@ -14,8 +14,8 @@
     "axios": "^1.13.2",
     "cors": "^2.8.5",
     "dayjs": "^1.11.9",
-    "svelte-dnd-action": "^0.9.67",
-    "svelte-routing": "^2.10.0"
+  "svelte-dnd-action": "^0.9.67",
+  "svelte-routing": "^2.10.0"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^6.2.1",

@@ -4,11 +4,8 @@
   import Card from '../components/Card.svelte';
   import CardInteractive from '../components/CardInteractive.svelte';
   import Spinner from '../components/Spinner.svelte';
-  import DndContextWrapper from '../components/dnd/DndContextWrapper.svelte';
-  import SortableList from '../components/dnd/SortableList.svelte';
-  import SortableItem from '../components/dnd/SortableItem.svelte';
-  import AgendaList from '../components/agenda/AgendaList.svelte';
-  import Section from '../components/layout/Section.svelte';
+  // AgendaList temporarily disabled while DnD is rebuilt
+  // Section component removed for debug; using local container instead
   import EmptyState from '../components/EmptyState.svelte';
   import SkeletonList from '../components/SkeletonList.svelte';
   import Button from '../components/Button.svelte';
@@ -26,7 +23,10 @@
     try {
   const res = await api.get(`/api/v1/agendamentos?data=${dateStr}`);
   // backend may return the array directly or { data: [...] }
-  console.log('[Home] raw response from api.get:', res);
+  // debug: use DEBUG=1 in dev to enable console output
+  if (import.meta.env.MODE !== 'production' && import.meta.env.VITE_DEBUG === '1') {
+    console.log('[Home] raw response from api.get:', res);
+  }
   agendamentos = Array.isArray(res) ? res : (res && (res as any).data) ? (res as any).data : [];
     } catch (err) {
       error = 'Erro ao buscar agendamentos';
@@ -36,13 +36,14 @@
   }
 
   // Home apenas recebe o evento reorder do wrapper; tipado como CustomEvent
-  async function onReorder(event: CustomEvent<{ orderedIds: Array<number|string>, items: any[] }>) {
-    const detail = event.detail ?? {};
-    const { orderedIds, items } = detail;
+  async function onReorder(event: any) {
+    const detail = event?.detail ?? {};
+    const orderedIds: Array<number|string> | undefined = detail.orderedIds ?? detail.orderedIds;
+    const items: any[] | undefined = detail.items ?? detail.items;
     if (!orderedIds || !Array.isArray(orderedIds)) return;
 
     // otimista: atualiza UI local
-    agendamentos = items ?? agendamentos;
+  agendamentos = items ?? agendamentos;
 
     saving = true;
     // micro-toast de salvando (curta duração)
@@ -91,8 +92,7 @@
   });
 </script>
 
-<Section padded>
-  <div class="container-mobile">
+<div class="container-mobile">
     
     {#if loading}
       <SkeletonList rows={4} />
@@ -101,11 +101,9 @@
         <Button slot="actions" loading={loading} on:click={() => fetchAgendamentos(dateToday)}>Recarregar</Button>
       </EmptyState>
     {:else}
-    <!-- AgendaList with DnD -->
-  <AgendaList items={agendamentos} on:reorder={onReorder} on:conclude={onConclude} on:cancel={onCancel} />
+  <!-- AgendaList temporarily disabled -->
     {/if}
   </div>
-  </Section>
 
 <style>
 </style>

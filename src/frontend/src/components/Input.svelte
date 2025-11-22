@@ -5,10 +5,12 @@
   export let placeholder = '';
   export let required = false;
   export let name = '';
+  // allow broad autocomplete values (browsers accept a set of tokens)
+  export let autocomplete: any = undefined;
 </script>
 
 <label for={id} class="ag-input__label"><slot name="label" /></label>
-<input id={id} name={name} class="ag-input" {type} bind:value {placeholder} {required} />
+<input id={id} name={name} class="ag-input" {type} bind:value {placeholder} {required} autocomplete={/** @type {any} */ autocomplete} />
 
 <style>
   .ag-input {

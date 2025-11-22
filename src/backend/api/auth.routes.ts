@@ -54,7 +54,11 @@ authRoutes.post("/signup", async (req, res) => {
 authRoutes.post("/login", async (req, res) => {
   try {
   // DEBUG: log body received from client to compare node vs browser requests
-  try { console.log('[POST /auth/login] body=', req.body); } catch(e){}
+  // Não logar body inteiro (pode conter senha). Log de debug pode ser habilitado por DEBUG=1.
+  try {
+    const debug = (process.env.DEBUG || '').toString() === '1';
+    if (debug) console.log('[POST /auth/login] body keys=', Object.keys(req.body || {}));
+  } catch (e) {}
     const signIn = new SignInPrestador();
     const prestador = await signIn.execute(req.body as ISignInPrestadorDTO);
 

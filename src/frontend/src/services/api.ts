@@ -8,7 +8,7 @@ const BASE = envBase || (typeof window !== 'undefined' && window.location && win
 const TOKEN_KEY = 'agendou_token';
 
 // use static import to avoid runtime dynamic import resolution issues
-import { showToast } from '../features/toast/store';
+import { showToast } from '../features/toast/store.js';
 
 function getToken(){
   try{
@@ -17,7 +17,7 @@ function getToken(){
   }catch(e){return null}
 }
 
-import http from './http';
+import http from './http.js';
 
 async function request(path: string, init: RequestInit = {}) {
   // Adapt to use axios instance

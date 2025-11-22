@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 declare module 'svelte-spa-router' {
   const Router: any;
   export default Router;
@@ -25,3 +27,21 @@ declare module '*.svelte' {
     Record<string, any>
   > {}
 }
+
+// Vite / SvelteKit style `import.meta.env` typings used in the frontend
+declare global {
+  interface ImportMetaEnv {
+    readonly MODE?: string;
+    readonly DEV?: boolean;
+    readonly PROD?: boolean;
+    readonly VITE_DEBUG?: string;
+    // add additional VITE_... vars here as needed, e.g.:
+    // readonly VITE_API_URL?: string;
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+}
+
+export {};

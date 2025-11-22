@@ -53,6 +53,17 @@
     z-index: 1300;
   }
 
+  /* Constrain navigation width on large screens to keep it centered (mobile-shaped) */
+  @media (min-width: 480px) {
+    .navigation {
+      max-width: 420px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+    }
+  }
+
   .nav-list {
     position: relative;
     display: flex;

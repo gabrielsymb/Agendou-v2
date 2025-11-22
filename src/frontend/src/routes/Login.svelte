@@ -6,7 +6,7 @@
   import { navigate } from '../lib/router';
   import { toasts } from '../stores/toast';
   import { auth } from '../lib/stores/auth';
-  import Section from '../components/layout/Section.svelte';
+  // Section component removed: layout handled globally
 
   let email = '';
   let senha = '';
@@ -46,15 +46,13 @@
   }
 </script>
 
-<Section padded>
   <div class="container-auth">
-    
-  <Card class="auth-panel">
+    <Card class="auth-panel">
     <h2 class="auth-title">Entrar</h2>
     
     <form on:submit|preventDefault={handleSubmit} style="display:flex;flex-direction:column;gap:.75rem;">
-      <Input id="email" type="email" bind:value={email}><span slot="label">E-mail</span></Input>
-      <PasswordInput id="senha" bind:value={senha}><span slot="label">Senha</span></PasswordInput>
+  <Input id="email" name="email" type="email" bind:value={email} autocomplete="email"><span slot="label">E-mail</span></Input>
+  <PasswordInput id="senha" name="password" bind:value={senha} autocomplete="current-password"><span slot="label">Senha</span></PasswordInput>
 
       <div style="margin-top:12px">
         <Button type="submit" loading={loading} disabled={loading}>{loading ? 'Entrando...' : 'Entrar'}</Button>
@@ -74,63 +72,27 @@
     </div>
     </Card>
   </div>
-</Section>
 
 <style>
-  /* --- Estilos do Container para Centralização --- */
-  .container-auth {
-    min-height: 100vh;
-    display: flex;
-    align-items: center; 
-    justify-content: center; 
-  padding: 24px 0; /* remove lateral padding to avoid pushing cards on small screens */
-  background: var(--color-bg);
-    box-sizing: border-box;
-    /* FIX: Impedir overflow horizontal */
-    overflow-x: hidden; 
-  }
-
-  /* --- Estilos do Card (Largura Fixa) --- */
-  :global(.ag-card.auth-panel) {
-    display: block !important;
-    width: 100% !important;
-    max-width: 500px !important; 
-    /* Mínimo seguro para evitar overflow em pequenos celulares (pode ser 300px) */
-    min-width: 320px !important; 
-  margin: 0 auto; /* Reforça a centralização */
-  box-sizing: border-box;
-    padding: 28px;
-    text-align: center;
-    /* Transição para fluidez */
-    transition: height 0.3s ease-in-out, max-height 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  }
-  
-  /* Resolvendo o aviso 'Unused CSS selector' do h2 */
-    .auth-title {
+  /* Keep page-specific typography & message styles; layout (container, card) is globalized in global.css */
+  .auth-title {
     margin-top: 0;
     margin-bottom: 1.5rem;
     color: var(--color-text);
   }
 
-  /* Resolvendo os avisos 'Unused CSS selector' de mensagens */
-  .message-error { 
-    color: #ffb4b4; 
-    font-size: 13px; 
-    margin-top: 8px; 
-  }
-  
-  .message-success { 
-    color: #a7f3d0; 
-    font-size: 13px; 
-    margin-top: 8px; 
+  .message-error {
+    color: #ff6b6b;
+    font-size: 13px;
+    margin-top: 0.5rem;
+    background: rgba(255, 107, 107, 0.06);
+    padding: 8px;
+    border-radius: 4px;
   }
 
-  /* --- Media Query para Desktop --- */
-  @media (min-width: 900px) {
-    :global(.ag-card.auth-panel) {
-      padding: 48px;
-      max-width: 550px !important;
-      min-width: 400px !important;
-    }
+  .message-success {
+    font-size: 13px;
+    color: #51cf66;
+    margin-top: 0.5rem;
   }
 </style>

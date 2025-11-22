@@ -1,11 +1,13 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import Icon from '@iconify/svelte';
 
   export let id = '';
   export let value: string | number = '';
   export let placeholder = '';
   export let required = false;
   export let name = '';
+  export let autocomplete: any = undefined;
   // Removida a prop 'type' não utilizada (para evitar o aviso do Svelte)
 
   const dispatch = createEventDispatcher();
@@ -38,15 +40,14 @@
     on:input={onInput}
     {placeholder}
     {required}
-    bind:value
+  bind:value
+  autocomplete={/** @type {any} */ autocomplete}
   />
   <button type="button" class="pw-toggle" on:click={toggle} aria-pressed={visible} aria-label={visible ? 'Ocultar senha' : 'Mostrar senha'}>
     {#if visible}
-      <!-- eye-off icon -->
-      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-5 0-9.27-3.11-11-8 1.25-3.26 3.7-5.78 6.53-6.93" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <Icon icon="mdi:eye-off" width="18" height="18" color="currentColor" aria-hidden="true" />
     {:else}
-      <!-- eye icon -->
-      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3"/></svg>
+      <Icon icon="mdi:eye" width="18" height="18" color="currentColor" aria-hidden="true" />
     {/if}
   </button>
 </div>
@@ -96,7 +97,24 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-  color: var(--color-text-muted, rgba(44,44,44,0.35));
+  /* use token de ícone/texto secundário por padrão */
+  color: var(--component-icon-color, var(--color-text-secondary, rgba(44,44,44,0.35)));
+  }
+
+  /* Guarantee icon visibility in dark cards */
+  :global(.card-ui) .pw-toggle {
+    color: var(--text-on-dark, rgba(255,255,255,0.92));
+  }
+
+  /* Estado ativo: quando a senha está visível */
+  .pw-toggle[aria-pressed="true"] {
+    color: var(--component-icon-color-active, var(--color-accent-400));
+  }
+
+  .pw-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(38,108,255,0.12);
+    border-radius: 8px;
   }
 
   /* Opcional: Adicionar um efeito visual ao focar o input */

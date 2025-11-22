@@ -60,19 +60,16 @@
       loading = false;
     }
   }
-  import Section from '../components/layout/Section.svelte';
 </script>
 
-<Section padded>
   <div class="container-auth">
-    
-  <Card class="auth-panel">
+    <Card class="auth-panel">
     <h2 class="auth-title">Criar conta</h2>
     
     <form on:submit|preventDefault={handleSubmit} style="display:flex;flex-direction:column;gap:.75rem;">
-      <Input id="nome" bind:value={nome}><span slot="label">Nome</span></Input>
-      <Input id="email" type="email" bind:value={email}><span slot="label">E-mail</span></Input>
-      <PasswordInput id="senha" bind:value={senha}><span slot="label">Senha</span></PasswordInput>
+  <Input id="nome" name="nome" bind:value={nome}><span slot="label">Nome</span></Input>
+  <Input id="email" name="email" type="email" bind:value={email} autocomplete="email"><span slot="label">E-mail</span></Input>
+  <PasswordInput id="senha" name="password" bind:value={senha} autocomplete="new-password"><span slot="label">Senha</span></PasswordInput>
       
       <Button type="submit" ariaLabel="Criar conta" loading={loading} disabled={loading}>
         {loading ? 'Criando...' : 'Criar conta'}
@@ -88,60 +85,30 @@
     </div>
     </Card>
   </div>
-</Section>
 
 <style>
-  /* --- Estilos do Container (Layout e Centralização) --- */
-  .container-auth {
-    min-height: 100vh;
-    display: flex;
-    align-items: center; /* Centraliza verticalmente */
-    justify-content: center; /* Centraliza horizontalmente */
-  padding: 24px 0; /* remove lateral padding on mobile */
-  background: var(--color-bg);
-    box-sizing: border-box;
-    overflow-x: hidden; /* Correção para telas pequenas */
-  }
-
-  /* --- Estilos do Card (Largura Fixa e Transição) --- */
-  :global(.ag-card.auth-panel) {
-    display: block !important;
-    width: 100% !important;
-    max-width: 500px !important; 
-    min-width: 300px !important; /* Mínimo ajustado para mobile */
-    margin: 0 auto; /* Centralização reforçada */
-  box-sizing: border-box;
-    padding: 28px;
-    text-align: center;
-    transition: height 0.3s ease-in-out, max-height 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  }
-  
-  /* --- Estilos de Título e Mensagens (Resolvendo os avisos) --- */
-  /* Reaplicando os estilos de h2 com a nova classe */
+  /* Keep page-level typography and message styles; layout centralization is global */
   .auth-title {
     margin-top: 0;
     margin-bottom: 1.5rem;
     color: var(--color-text);
   }
 
-  /* Reaplicando os estilos de .error com a nova classe */
-  .message-error { 
-    font-size: 13px; 
-    color: #ff6b6b; 
+  .message-error {
+    font-size: 13px;
+    color: #ff6b6b;
     margin-top: 0.5rem;
-    background: rgba(255, 107, 107, 0.1);
+    background: rgba(255, 107, 107, 0.06);
     padding: 8px;
     border-radius: 4px;
   }
-  
-  /* Reaplicando os estilos de .success com a nova classe */
-  .message-success { 
-    font-size: 13px; 
+
+  .message-success {
+    font-size: 13px;
     color: #51cf66;
-    margin-top: 0.5rem; 
+    margin-top: 0.5rem;
   }
 
-  /* --- Media Query para Desktop --- */
   @media (min-width: 900px) {
     :global(.ag-card.auth-panel) {
       padding: 48px;

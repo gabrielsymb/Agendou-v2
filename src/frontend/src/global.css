@@ -1,0 +1,228 @@
+/* -------------------------------------
+   GLOBAL.CSS – versão otimizada
+   Objetivo: fornecer um baseline consistente,
+   reduzir conflitos e melhorar previsibilidade.
+-------------------------------------- */
+
+/* Design tokens (extracted from doc/UX/tokens-ux.md) */
+:root {
+  /* Neutrals */
+  --color-neutral-000: #FFFFFF;
+  --color-neutral-050: #F7F7F6;
+  --color-neutral-100: #F4F3F1;
+  --color-neutral-200: #E8E7E5;
+  --color-neutral-300: #D0CFCC;
+  --color-neutral-400: #B5B4B1;
+  --color-neutral-500: #8F8E8B;
+  --color-neutral-600: #6A6A6A;
+  --color-neutral-700: #4A4A4A;
+  --color-neutral-800: #2C2C2C;
+  --color-neutral-900: #1A1A1A;
+
+  /* Accent */
+  --color-accent-300: #FF8A70;
+  --color-accent-400: #FF7957;
+  --color-accent-500: #E46B4C;
+
+  /* Feedback */
+  --color-success-500: #2ECC71;
+  --color-warning-500: #F1C40F;
+  --color-danger-500: #E74C3C;
+  --color-info-500: #3498DB;
+
+  /* Semantic */
+  --color-bg-primary: var(--color-neutral-100);
+  --color-bg-secondary: var(--color-neutral-000);
+  --color-surface: var(--color-neutral-000);
+  --color-surface-alt: var(--color-neutral-050);
+
+  --color-text-primary: var(--color-neutral-800);
+  --color-text-secondary: var(--color-neutral-600);
+  --color-text-inverse: var(--color-neutral-000);
+
+  /* Component tokens (inputs) */
+  --component-input-bg: var(--color-surface);
+  --component-input-border: var(--color-neutral-300);
+  --component-input-border-focus: var(--color-accent-400);
+  --component-input-text: var(--color-text-primary);
+  --component-input-placeholder: var(--color-text-secondary);
+
+  /* Local theme tokens used elsewhere */
+  --agendou-card: #1f2937;
+  --agendou-dark: #121212;
+  --text-on-dark: rgba(255,255,255,0.92);
+}
+
+/* Inter font-face (local files in src/fonts) */
+@font-face {
+  font-family: 'Inter';
+  src: url('/src/fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/src/fonts/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Reset básico e normalização mínima */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  background: var(--color-bg-primary, #f9f9fb);
+  color: var(--color-text-primary, #222);
+}
+
+/* Links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+a:hover {
+  opacity: 0.8;
+}
+
+/* Tipografia padrão */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* Imagens responsivas */
+img, picture, video, canvas, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Botões base */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font: inherit;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Formulários */
+/* Form controls using design tokens */
+input, textarea, select {
+  font: inherit;
+  border: 1px solid var(--component-input-border, #ddd);
+  padding: var(--component-input-padding, 0.5rem) var(--component-input-padding, 0.75rem);
+  border-radius: var(--component-input-radius, 4px);
+  background: var(--component-input-bg, #fff);
+  color: var(--component-input-text, #222);
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(38,108,255,0.12);
+  border-color: var(--component-input-border-focus, #2684ff);
+}
+
+/* Target ag-input class to ensure visible background/color even when parent or inline styles are weak */
+.ag-input {
+  background: var(--component-input-bg, #fff) !important;
+  color: var(--component-input-text, #222) !important;
+  border: 1px solid var(--component-input-border, #ddd) !important;
+}
+
+/* Dark card variant */
+.card-ui .ag-input,
+.card-ui input.ag-input {
+  background: var(--agendou-card, #1f2937) !important;
+  color: var(--text-on-dark, rgba(255,255,255,0.92)) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Placeholder visibility */
+.ag-input::placeholder {
+  color: var(--component-input-placeholder, rgba(0,0,0,0.45)) !important;
+  opacity: 1 !important;
+}
+.card-ui .ag-input::placeholder {
+  color: rgba(255,255,255,0.6) !important;
+}
+
+/* Focus for ag-input (green overlay as requested) */
+.ag-input:focus,
+.card-ui .ag-input:focus {
+  box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.12) !important;
+  border-color: rgba(52, 211, 153, 0.6) !important;
+  outline: none !important;
+}
+
+/* Scrollbar (opcional) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 4px;
+}
+
+/* Utilidades */
+.hidden {
+  display: none !important;
+}
+
+.flex {
+  display: flex;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ajuste correto e abrangente */
+main.bg-light {
+  padding-top: calc(var(--layout-header-height, 56px) + var(--layout-header-gap, 12px));
+}
+
+main.bg-light {
+  min-height: calc(
+     var(--vh, 1vh) * 100
+     - var(--layout-header-height, 56px)
+     - var(--component-tabbar-height, 64px)
+  );
+}
+
+/* Se o header existir só em algumas rotas e não for imediatamente adjacente,
+   usar o seletor de irmãos gerais para cobrir wrappers entre header e main:
+
+.app-header ~ main.bg-light {
+  padding-top: calc(var(--layout-header-height, 56px) + var(--layout-header-gap, 12px));
+}
+*/
+
+/* Previne margin collapsing do primeiro filho dentro do main */
+.layout-root {
+  border-top: 1px solid transparent;
+}

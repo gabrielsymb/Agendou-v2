@@ -22,11 +22,17 @@ export class SignInPrestador {
   ): Promise<Omit<IPrestador, "senhaHash">> {
     const validatedData = SignInPrestadorSchema.parse(data);
 
-    // DEBUG: log incoming email for troubleshooting login issues
-  console.log('[SignInPrestador] attempt email=', validatedData.email);
+    // DEBUG: log incoming email for troubleshooting login issues (only with DEBUG=1)
+  try {
+    const debug = (process.env.DEBUG || '').toString() === '1';
+    if (debug) console.log('[SignInPrestador] attempt email=', validatedData.email);
+  } catch(e) {}
 
     const prestador = this.repository.findByEmail(validatedData.email);
-  console.log('[SignInPrestador] prestador found=', Boolean(prestador), prestador && { id: prestador.id, email: prestador.email });
+  try {
+    const debug = (process.env.DEBUG || '').toString() === '1';
+    if (debug) console.log('[SignInPrestador] prestador found=', Boolean(prestador), prestador && { id: prestador.id, email: prestador.email });
+  } catch(e) {}
 
     if (!prestador) {
       throw new Error("Credenciais inválidas. Verifique e-mail e senha.");
@@ -36,7 +42,10 @@ export class SignInPrestador {
       validatedData.senha,
       prestador.senhaHash
     );
-  console.log('[SignInPrestador] bcrypt.compare result=', isPasswordValid);
+  try {
+    const debug = (process.env.DEBUG || '').toString() === '1';
+    if (debug) console.log('[SignInPrestador] bcrypt.compare result=', isPasswordValid);
+  } catch(e) {}
 
     if (!isPasswordValid) {
       throw new Error("Credenciais inválidas. Verifique e-mail e senha.");

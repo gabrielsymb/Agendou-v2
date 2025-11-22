@@ -36,13 +36,94 @@
     })();
   </script>
 
-    <title>frontend</title>
+      <!-- Dev helper: detecta alterações em runtime que definam `body.style.display = 'flex'` -->
+      <script>
+        (function () {
+          if (typeof window === 'undefined') return;
+          try {
+            // Intercept setProperty on style to catch inline style changes
+            const origSetProperty = CSSStyleDeclaration.prototype.setProperty;
+            CSSStyleDeclaration.prototype.setProperty = function (name, value, priority) {
+              try {
+                if (name === 'display' && String(value).trim() === 'flex') {
+                  console.warn('[debug] body display set via setProperty ->', value);
+                  console.trace();
+                }
+              } catch (e) { /* ignore */ }
+              return origSetProperty.call(this, name, value, priority);
+            };
+
+            // Observe changes to body attributes (style/class)
+            const obs = new MutationObserver(function (mutations) {
+              for (const m of mutations) {
+                if (m.attributeName === 'style') {
+                  if (document.body && document.body.style && document.body.style.display === 'flex') {
+                    console.warn('[debug][mutation] body.style.display === "flex"');
+                    console.trace();
+                  }
+                }
+                if (m.attributeName === 'class') {
+                  const cls = document.body && document.body.className;
+                  if (cls && /\bflex\b/.test(cls)) {
+                    console.warn('[debug][mutation] body.class contains "flex" token ->', cls);
+                    console.trace();
+                  }
+                }
+              }
+            });
+
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', function () {
+                obs.observe(document.body, { attributes: true, attributeFilter: ['style', 'class'] });
+              });
+            } else {
+              obs.observe(document.body, { attributes: true, attributeFilter: ['style', 'class'] });
+            }
+          } catch (e) {
+            // noop
+          }
+        })();
+      </script>
+
+    <title>Agendou!</title>
     <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#F4F3F1" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Agendou" />
+  <script>
+    (function () {
+      if (typeof window === 'undefined') return;
+      try {
+        const setVh = () => {
+          const vh = window.innerHeight * 0.01;
+          document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
+        setVh();
+        window.addEventListener('resize', setVh);
+
+        // detect iOS
+        const isIOS = /iP(hone|od|ad)/.test(navigator.platform) || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+        if (isIOS) document.documentElement.classList.add('is-ios');
+
+        // Helper: toggle main overflow when content is smaller than viewport
+        const adjustMainOverflow = () => {
+          const main = document.querySelector('main.bg-light');
+          if (!main) return;
+          // if content height <= viewport height then hide overflow to avoid scrollbar
+          if (main.scrollHeight <= window.innerHeight) {
+            main.style.overflowY = 'hidden';
+          } else {
+            main.style.overflowY = 'auto';
+          }
+        };
+        window.addEventListener('resize', adjustMainOverflow);
+        window.addEventListener('load', adjustMainOverflow);
+        document.addEventListener('DOMContentLoaded', adjustMainOverflow);
+      } catch (e) {}
+    })();
+  </script>
   </head>
   <body>
     <div id="app"></div>
